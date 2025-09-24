@@ -54,6 +54,9 @@
     .link-brute { position:relative; font-weight:600; padding:.15rem .4rem; border:2px solid #000; border-radius:.55rem; background:var(--nb-bg); box-shadow:2px 2px 0 0 #000; }
     .link-brute:hover { background:var(--nb-accent); color:#000; }
     .prose pre { background:#000; }
+    /* Cursor trail particles */
+    .cursor-trail-item { position:fixed; width:12px; height:12px; border:2px solid var(--nb-border); border-radius:5px; box-shadow:2px 2px 0 0 var(--nb-border); pointer-events:none; z-index:40; opacity:.95; transition:transform .6s cubic-bezier(.22,1,.36,1), opacity .6s linear; will-change:transform,opacity; mix-blend-mode:normal; }
+    @media (prefers-reduced-motion: reduce) { .cursor-trail-item { display:none; } }
   </style>
 </head>
 <body class="min-h-screen selection:bg-accent selection:text-black">
@@ -105,7 +108,7 @@
           <pre class="code-block !p-4 !m-0"><code>cargo install rusty_checker --locked
 cargo install ls-rs --locked</code></pre>
         </div>
-        <p class="mt-6 text-sm font-mono font-semibold tracking-wide">Upstream contributions: <a class="link-brute" href="https://github.com/tauri-apps" target="_blank" rel="noopener">Tauri</a>, <a class="link-brute" href="https://github.com/riscv" target="_blank" rel="noopener">RISC-V</a>, <a class="link-brute" href="https://crates.io/crates/cortex-a" target="_blank" rel="noopener">cortex-a</a>.</p>
+        <p class="mt-6 text-sm font-mono font-semibold tracking-wide">Upstream contributions: <a class="link-brute" href="https://github.com/tauri-apps/tauri" target="_blank" rel="noopener">Tauri</a>, <a class="link-brute" href="https://github.com/rust-embedded/riscv" target="_blank" rel="noopener">RISC-V</a>, <a class="link-brute" href="https://github.com/rust-embedded/cortex-a" target="_blank" rel="noopener">cortex-a</a>.</p>
       </div>
     </div>
     <div class="mt-20 divider"></div>
@@ -406,6 +409,38 @@ cd RustyBoot
       if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         document.querySelectorAll('.btn').forEach(b=> b.style.transition='none');
       }
+      // Cursor trail (disabled for reduced motion or non-fine pointers)
+      (function(){
+        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if(!window.matchMedia('(pointer: fine)').matches) return;
+        const colors = ['#ff6b3d','#1EAEDB','#FFD60A','#39FF14'];
+        let last = 0;
+        let active = 0;
+        const MAX_ACTIVE = 20; // cap simultaneous particles
+        window.addEventListener('pointermove', (e)=>{
+          const now = performance.now();
+          if(now - last < 60) return; // slower throttle (~16fps)
+          if(Math.random() < 0.35) return; // probabilistic skip to cut density
+          if(active >= MAX_ACTIVE) return; // avoid DOM overload
+          last = now;
+          active++;
+          const el = document.createElement('span');
+          el.className = 'cursor-trail-item';
+          el.style.background = colors[Math.floor(Math.random()*colors.length)];
+          const size = 9 + Math.random()*6; // slightly smaller
+          el.style.width = size+'px';
+          el.style.height = size+'px';
+          el.style.left = (e.clientX - size/2)+'px';
+          el.style.top = (e.clientY - size/2)+'px';
+          el.style.transform = 'translateY(0) scale(1)';
+          document.body.appendChild(el);
+          requestAnimationFrame(()=>{
+            el.style.transform = `translate(${(Math.random()*18-9).toFixed(1)}px,${(-16 - Math.random()*8).toFixed(1)}px) scale(.4) rotate(${(Math.random()*50-25).toFixed(1)}deg)`;
+            el.style.opacity = '0';
+          });
+          setTimeout(()=> { el.remove(); active--; }, 520);
+        }, { passive:true });
+      })();
     })();
   </script>
 </body>
