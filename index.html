@@ -1,615 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <title>Rusty-Suite | Modern Rust Applications</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rust: {
-                            50: '#fef7f0',
-                            100: '#fdeee0',
-                            200: '#fad9bf',
-                            300: '#f6bd94',
-                            400: '#f09867',
-                            500: '#ea7943',
-                            600: '#dc5f29',
-                            700: '#b74920',
-                            800: '#923d1f',
-                            900: '#77331e',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-up': 'slide-up 0.8s ease-out forwards',
-                        'fade-in': 'fade-in 0.6s ease-out forwards',
-                        'spin-slow': 'spin 3s linear infinite',
-                        'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
-                        'gradient': 'gradient 15s ease infinite',
-                        'particles': 'particles 20s linear infinite',
-                    }
-                }
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Rusty Suite – Fast, safe Rust utilities & experiments (Tauri apps, diagnostics, bootloader tinkering) with upstream contributions to Tauri, RISC-V and cortex-a." />
+  <title>Rusty Suite • Fast, Safe Rust Tools</title>
+  <!-- Early theme apply to avoid flash -->
+  <script>
+    (function(){
+      try {
+        const saved = localStorage.getItem('rusty-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = saved || (prefersDark ? 'dark' : 'light');
+        const root = document.documentElement;
+        root.setAttribute('data-theme', theme);
+        if(theme==='dark') root.classList.add('dark');
+      } catch(e) { /* noop */ }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { mono: ['JetBrains Mono','ui-monospace','SFMono-Regular', 'Menlo', 'monospace'], sans: ['Inter','system-ui','sans-serif'], display:['Inter','system-ui','sans-serif'] },
+          colors: { ink:'#0f0f11', paper:'#f8f8f2', accent:'#ff6b3d', accent2:'#1EAEDB', accent3:'#FFD60A', acid:'#39FF14' },
+          boxShadow: { brute:'4px 4px 0 0 #000', 'brute-sm':'2px 2px 0 0 #000' },
+          rotate: { 1:'1deg', 2:'2deg', 3:'3deg', '-1':'-1deg', '-2':'-2deg' }
         }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
-        * { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .gradient-bg { background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f172a 100%); background-size: 400% 400%; animation: gradient 15s ease infinite; }
-        @keyframes gradient { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-        .card-hover { transition: all .4s cubic-bezier(.4,0,.2,1); position: relative; overflow: hidden; }
-        .card-hover::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent); transition:left .6s; }
-        .card-hover:hover::before { left:100%; }
-        .card-hover:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 30px 60px -12px rgba(234,121,67,.3); }
-        .rust-gradient { background: linear-gradient(135deg,#ea7943 0%,#dc5f29 50%,#b74920 100%); }
-        .tech-badge { backdrop-filter: blur(16px); background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); transition: all .3s ease; }
-        .tech-badge:hover { background: rgba(234,121,67,.2); border-color: rgba(234,121,67,.4); transform: translateY(-2px); }
-        @keyframes float { 0%,100%{transform:translateY(0) rotate(0)} 33%{transform:translateY(-20px) rotate(5deg)} 66%{transform:translateY(-10px) rotate(-5deg)} }
-        @keyframes pulse-glow { 0%,100%{opacity:1; box-shadow:0 0 30px rgba(234,121,67,.5),0 0 60px rgba(234,121,67,.2)} 50%{opacity:.9; box-shadow:0 0 50px rgba(234,121,67,.8),0 0 100px rgba(234,121,67,.4)} }
-        @keyframes slide-up { from{opacity:0; transform:translateY(50px)} to{opacity:1; transform:translateY(0)} }
-        @keyframes fade-in { from{opacity:0} to{opacity:1} }
-        @keyframes bounce-gentle { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes particles { 0%{transform:translateY(0) rotate(0); opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateY(-100vh) rotate(360deg); opacity:0} }
-        .glass-effect { background: rgba(255,255,255,.05); backdrop-filter: blur(20px); border:1px solid rgba(255,255,255,.1); }
-        .text-glow { text-shadow: 0 0 20px rgba(234,121,67,.5); }
-        .particles { position:absolute; width:4px; height:4px; background:#ea7943; border-radius:50%; animation: particles 20s linear infinite; }
-        .particles:nth-child(odd){ background:#dc5f29; animation-duration:25s; }
-        .particles:nth-child(3n){ background:#f09867; animation-duration:30s; }
-        .scroll-indicator { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); animation:bounce-gentle 2s ease-in-out infinite; }
-        .typing-animation { overflow:hidden; border-right:3px solid #ea7943; white-space:nowrap; animation: typing 3s steps(20,end), blink-caret 1s step-end infinite; }
-        @keyframes typing { from{width:0} to{width:100%} }
-        @keyframes blink-caret { from,to{border-color:transparent} 50%{border-color:#ea7943} }
-        .project-icon { transition: all .3s ease; }
-        .card-hover:hover .project-icon { transform: scale(1.1) rotate(5deg); }
-        .feature-card { background: linear-gradient(135deg, rgba(15,23,42,.9) 0%, rgba(30,41,59,.9) 100%); transition: all .4s cubic-bezier(.4,0,.2,1); }
-        .feature-card:hover { background: linear-gradient(135deg, rgba(234,121,67,.1) 0%, rgba(15,23,42,.95) 100%); border-color: rgba(234,121,67,.3); }
-        .nav-item { position:relative; transition: all .3s ease; }
-        .nav-item::after { content:''; position:absolute; bottom:-5px; left:50%; width:0; height:2px; background:linear-gradient(90deg,#ea7943,#dc5f29); transition:all .3s ease; transform:translateX(-50%); }
-        .nav-item:hover::after { width:100%; }
-        .loading-animation { display:inline-block; animation: spin-slow 3s linear infinite; }
-        .intersection-observer { opacity:0; transform:translateY(30px); transition: all .8s cubic-bezier(.4,0,.2,1); }
-        .intersection-observer.visible { opacity:1; transform:translateY(0); }
-        .contact-form { backdrop-filter: blur(20px); background: rgba(15,23,42,.8); border:1px solid rgba(234,121,67,.2); }
-        .contact-input { background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); transition: all .3s ease; }
-        .contact-input:focus { background: rgba(255,255,255,.08); border-color: rgba(234,121,67,.5); outline:none; box-shadow:0 0 0 2px rgba(234,121,67,.2); }
-    </style>
+      }
+    };
+  </script>
+  <style>
+    :root { --nb-bg:#fefefe; --nb-ink:#0f0f11; --nb-border:#000; --nb-accent:#ff6b3d; }
+    [data-theme='dark'] { --nb-bg:#0f0f11; --nb-ink:#f8f8f2; --nb-border:#f8f8f2; }
+    /* Smooth scroll (respects reduced motion preference) */
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { font-family: Inter, system-ui, sans-serif; background: var(--nb-bg); color: var(--nb-ink); transition: background-color .35s, color .35s; }
+    .nb-card { background: var(--nb-bg); border:4px solid var(--nb-border); box-shadow:4px 4px 0 0 var(--nb-border); border-radius:1.25rem; position:relative; }
+    .btn { --c:var(--nb-ink); --bg:var(--nb-accent); display:inline-flex; align-items:center; gap:.5rem; font-weight:700; font-family:Inter, sans-serif; background:var(--bg); color:var(--nb-ink); border:4px solid #000; box-shadow:4px 4px 0 0 #000; padding:.75rem 1.15rem; border-radius:1rem; line-height:1; font-size:.9rem; position:relative; transition:.15s transform; }
+    .btn:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 0 #000; }
+    .btn:active { transform:translate(0,0); box-shadow:2px 2px 0 0 #000; }
+    .btn.secondary { --bg:var(--nb-ink); color:var(--nb-bg); }
+    .btn.outline { background:var(--nb-bg); color:var(--c,var(--nb-ink)); }
+    .tag { display:inline-block; font-family:JetBrains Mono, monospace; font-size:.65rem; letter-spacing:.05em; padding:.35rem .55rem; background:var(--nb-ink); color:var(--nb-bg); border:2px solid #000; border-radius:.5rem; box-shadow:2px 2px 0 0 #000; }
+    .code-block { background:#000; color:#f8f8f2; font-family:JetBrains Mono, monospace; padding:1rem 1.25rem; border:4px solid #000; border-radius:1rem; box-shadow:4px 4px 0 0 #000; font-size:.8rem; line-height:1.35; overflow:auto; }
+    .divider { height:6px; background:#000 repeating-linear-gradient(45deg,#000 0 8px,#ff6b3d 8px 16px); border:4px solid #000; border-left:none; border-right:none; }
+    .focus-ring:focus-visible { outline:3px solid var(--nb-accent); outline-offset:2px; }
+    .link-brute { position:relative; font-weight:600; padding:.15rem .4rem; border:2px solid #000; border-radius:.55rem; background:var(--nb-bg); box-shadow:2px 2px 0 0 #000; }
+    .link-brute:hover { background:var(--nb-accent); color:#000; }
+    .prose pre { background:#000; }
+  </style>
 </head>
-<body class="bg-slate-950 text-gray-100 overflow-x-hidden">
-    <!-- Particle Background -->
+<body class="min-h-screen selection:bg-accent selection:text-black">
+  <!-- Site Header -->
+  <header class="sticky top-0 z-50 border-b-4 border-black bg-[var(--nb-bg)] supports-[backdrop-filter]:backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-6">
+      <a href="#home" class="flex items-center gap-3 group">
+        <span class="text-2xl md:text-3xl">🦀</span>
+        <span class="font-extrabold font-display text-lg md:text-xl leading-none">Rusty Suite</span>
+      </a>
+      <nav class="flex items-center gap-2 overflow-x-auto py-2" aria-label="Primary">
+        <a href="#home" data-nav="home" class="btn outline nav-link">Home</a>
+        <a href="#projects" data-nav="projects" class="btn outline nav-link">Projects</a>
+  <a href="#tooling" data-nav="tooling" class="btn outline nav-link">Tooling</a>
+  <a href="#contrib" data-nav="contrib" class="btn outline nav-link">Contrib</a>
+        <a href="#articles" data-nav="articles" class="btn outline nav-link">Writing</a>
+        <a href="#contact" data-nav="contact" class="btn outline nav-link">Contact</a>
+  <a href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener" class="btn nav-link">GitHub</a>
+  <a href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener" class="btn outline nav-link">GitLab</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" aria-label="Toggle theme" class="btn outline !p-2 w-11 h-11 justify-center" aria-pressed="false"><span class="text-lg" id="themeIcon">🌙</span></button>
+      </div>
+    </div>
+  </header>
 
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 glass-effect transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rust-gradient rounded-xl flex items-center justify-center pulse-glow">
-                        <span class="text-white font-bold text-lg loading-animation">⚙️</span>
-                    </div>
-                    <span class="text-xl font-bold text-white text-glow">Rusty-Suite</span>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#home" class="nav-item text-gray-300 hover:text-rust-400 font-medium">Home</a>
-                    <a href="#projects" class="nav-item text-gray-300 hover:text-rust-400 font-medium">Projects</a>
-                    <a href="#about" class="nav-item text-gray-300 hover:text-rust-400 font-medium">About</a>
-                    <a href="#contact" class="nav-item text-gray-300 hover:text-rust-400 font-medium">Contact</a>
-                </div>
-                
-                <div class="md:hidden">
-                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-rust-400 p-2" aria-label="Toggle menu">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
+  <!-- Hero -->
+  <section id="home" class="pt-16 md:pt-24 pb-20 md:pb-32">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-[minmax(0,1fr)_320px] gap-12 items-start">
+      <div>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="tag rotate-[-2deg]">MEMORY SAFE RUST</span>
+          <span class="tag rotate-1">LOW LEVEL</span>
+          <span class="tag -rotate-1">METAL TOUCHING</span>
+          <span class="tag rotate-2">BOOTLOADER</span>
         </div>
-        <div id="mobile-menu" class="md:hidden hidden glass-effect border-t border-slate-700">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="#home" class="block px-3 py-2 text-gray-300 hover:text-rust-400">Home</a>
-                <a href="#projects" class="block px-3 py-2 text-gray-300 hover:text-rust-400">Projects</a>
-                <a href="#about" class="block px-3 py-2 text-gray-300 hover:text-rust-400">About</a>
-                <a href="#contact" class="block px-3 py-2 text-gray-300 hover:text-rust-400">Contact</a>
-                
-            </div>
+        <h1 class="font-display font-extrabold text-4xl md:text-6xl leading-[1.05] tracking-tight mb-6 max-w-2xl">
+          Bold edges. Safe, fast Rust inside.
+        </h1>
+        <p class="text-lg md:text-xl font-medium max-w-2xl mb-8">
+          A small suite of opinionated Rust utilities, experiments & desktop tools. From bootloader tinkering to cross‑platform Tauri apps & ergonomically loud CLIs.
+        </p>
+        <div class="flex flex-wrap gap-4 mb-10">
+          <a href="#projects" class="btn">Explore Projects →</a>
+          <a href="#tooling" class="btn secondary">Install Tools</a>
         </div>
-    </nav>
-
-    <!-- Hero -->
-    <section id="home" class="min-h-screen gradient-bg flex items-center justify-center relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-rust-900/30 via-transparent to-blue-900/20"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center">
-                <div class="floating-animation mb-8 intersection-observer">
-                    <div class="w-32 h-32 rust-gradient rounded-3xl mx-auto flex items-center justify-center pulse-glow shadow-2xl">
-                        <span class="text-white font-bold text-5xl">⚙️</span>
-                    </div>
-                </div>
-                <div class="intersection-observer">
-                    <h1 class="text-6xl md:text-8xl font-black mb-6">
-                        <span class="bg-gradient-to-r from-rust-300 via-rust-400 via-rust-500 to-rust-600 bg-clip-text text-transparent text-glow">Rusty-Suite</span>
-                    </h1>
-                    <div class="text-xl md:text-3xl text-gray-200 mb-8 max-w-4xl mx-auto font-light leading-relaxed">
-                        <span class="typing-animation font-mono">Building the future with Rust</span><br class="hidden md:block" />
-                        <span class="text-rust-300">Performance • Safety • Elegance</span>
-                    </div>
-                </div>
-                <div class="flex flex-wrap justify-center gap-4 mb-16 intersection-observer">
-                    <span class="tech-badge px-6 py-3 rounded-full text-base font-semibold flex items-center space-x-2"><span>🦀</span><span>Rust</span></span>
-                    <span class="tech-badge px-6 py-3 rounded-full text-base font-semibold flex items-center space-x-2"><span>⚡</span><span>Performance</span></span>
-                    <span class="tech-badge px-6 py-3 rounded-full text-base font-semibold flex items-center space-x-2"><span>🛡️</span><span>Memory Safety</span></span>
-                    <span class="tech-badge px-6 py-3 rounded-full text-base font-semibold flex items-center space-x-2"><span>🌐</span><span>Cross-Platform</span></span>
-                </div>
-                <div class="intersection-observer">
-                    <a href="#projects" class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-rust-500 to-rust-600 hover:from-rust-600 hover:to-rust-700 text-white font-bold rounded-2xl transition-all transform hover:scale-105 shadow-2xl">
-                        Explore Projects
-                        <svg class="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+        <div class="nb-card p-5 max-w-2xl bg-accent/10">
+          <p class="font-mono text-xs mb-2 font-bold">install (examples)</p>
+          <pre class="code-block !p-4 !m-0"><code>cargo install rusty_checker --locked
+cargo install ls-rs --locked</code></pre>
         </div>
-        <div class="scroll-indicator">
-            <div class="w-6 h-10 border-2 border-rust-400 rounded-full p-1">
-                <div class="w-1 h-3 bg-rust-400 rounded-full mx-auto animate-bounce"></div>
-            </div>
+        <p class="mt-6 text-sm font-mono font-semibold tracking-wide">Upstream contributions: <a class="link-brute" href="https://github.com/tauri-apps" target="_blank" rel="noopener">Tauri</a>, <a class="link-brute" href="https://github.com/riscv" target="_blank" rel="noopener">RISC-V</a>, <a class="link-brute" href="https://crates.io/crates/cortex-a" target="_blank" rel="noopener">cortex-a</a>.</p>
+      </div>
+    </div>
+    <div class="mt-20 divider"></div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="py-20 md:py-28">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
+        <div class="flex-1">
+          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Project Showcase</h2>
+          <p class="text-base md:text-lg font-medium max-w-2xl">Utilities & experiments spanning Tauri, diagnostics, and low-level learning.</p>
         </div>
-    </section>
-
-    <!-- Stats -->
-    <section id="stats" class="py-20 glass-effect border-y border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div class="text-center intersection-observer">
-                    <div class="text-4xl md:text-5xl font-black text-rust-400 mb-2" data-counter="4">0</div>
-                    <div class="text-gray-300 font-medium">Projects</div>
-                </div>
-                <div class="text-center intersection-observer">
-                    <div class="text-4xl md:text-5xl font-black text-rust-400 mb-2" data-counter="100">0</div>
-                    <div class="text-gray-300 font-medium">% Rust</div>
-                </div>
-                <div class="text-center intersection-observer">
-                    <div class="text-4xl md:text-5xl font-black text-rust-400 mb-2">∞</div>
-                    <div class="text-gray-300 font-medium">Possibilities</div>
-                </div>
-                <div class="text-center intersection-observer">
-                    <div class="text-4xl md:text-5xl font-black text-rust-400 mb-2" data-counter="0">0</div>
-                    <div class="text-gray-300 font-medium">Memory Leaks</div>
-                </div>
-            </div>
+        <div class="flex gap-3 flex-wrap">
+          <a href="#tooling" class="btn outline">Install</a>
+          <a href="#articles" class="btn outline">Articles</a>
         </div>
-    </section>
+      </header>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- RustyTodos -->
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-lg mb-1">RustyTodos</h3>
+          <p class="text-sm font-medium leading-relaxed mb-4">Tauri desktop task manager. Local-first, keyboard-centric, intentionally verbose visuals.</p>
+          <ul class="text-[11px] font-mono space-y-1 mb-4">
+            <li>Stack: Rust · Tauri · IndexedDB</li>
+            <li>Status: active</li>
+          </ul>
+          <div class="mt-auto flex flex-col gap-2">
+            <a class="btn" href="https://github.com/KushalMeghani1644/RustyTodos/releases" target="_blank" rel="noopener">Download</a>
+            <a class="btn outline" href="https://github.com/KushalMeghani1644/RustyTodos" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+        <!-- RustyBoot -->
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-lg mb-1">RustyBoot</h3>
+          <p class="text-sm font-medium leading-relaxed mb-4">Experimental bootloader exploration. Learning path, not production. Hardware caution advised.</p>
+          <ul class="text-[11px] font-mono space-y-1 mb-4">
+            <li>Domain: systems prime</li>
+            <li>Status: evolving notes</li>
+          </ul>
+          <div class="mt-auto flex flex-col gap-2">
+            <a class="btn" href="https://github.com/KushalMeghani1644/RustyBoot" target="_blank" rel="noopener">Download</a>
+            <a class="btn outline" href="https://github.com/KushalMeghani1644/RustyBoot" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+        <!-- rusty_checker -->
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-lg mb-1">rusty_checker</h3>
+          <p class="text-sm font-medium leading-relaxed mb-4">Lightweight memory anomaly & stats watcher. CLI-first with consistent output grammar.</p>
+          <ul class="text-[11px] font-mono space-y-1 mb-4">
+            <li>Crate: published</li>
+            <li>Focus: diagnostics</li>
+          </ul>
+          <div class="mt-auto flex flex-col gap-2">
+            <a class="btn" href="https://crates.io/crates/rusty_checker" target="_blank" rel="noopener">Download</a>
+            <a class="btn outline" href="https://github.com/KushalMeghani1644/Rusty-Checker" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+        <!-- ls-rs -->
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-lg mb-1">ls-rs</h3>
+          <p class="text-sm font-medium leading-relaxed mb-4">Opinionated colorful directory lister. Clear alignment & emphasis for fast scanning.</p>
+          <ul class="text-[11px] font-mono space-y-1 mb-4">
+            <li>CLI: installable</li>
+            <li>Focus: dev UX</li>
+          </ul>
+          <div class="mt-auto flex flex-col gap-2">
+            <a class="btn" href="https://crates.io/crates/ls-rs" target="_blank" rel="noopener">Download</a>
+            <a class="btn outline" href="https://github.com/KushalMeghani1644/ls-rs" target="_blank" rel="noopener">Source</a>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="mt-24 divider"></div>
+  </section>
 
-    <!-- Projects -->
-    <section id="projects" class="py-20 bg-slate-900 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-20 intersection-observer">
-                <h2 class="text-5xl md:text-7xl font-black mb-8">
-                    <span class="bg-gradient-to-r from-rust-400 to-rust-600 bg-clip-text text-transparent">Featured Projects</span>
-                </h2>
-                <p class="text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-                    Discover the applications that power the Rust ecosystem
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <!-- RustyTodos -->
-                <div class="card-hover glass-effect border border-slate-600/50 rounded-3xl p-10 intersection-observer">
-                    <div class="flex items-center mb-8">
-                        <div class="project-icon w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mr-6 shadow-lg">
-                            <span class="text-white text-2xl">📝</span>
-                        </div>
-                        <h3 class="text-3xl font-black text-white">RustyTodos</h3>
-                    </div>
-                    <p class="text-gray-300 mb-8 leading-relaxed text-lg">
-                        A sleek GUI-based todo application combining the power of Rust backend with TypeScript frontend. 
-                        Features cross-platform notifications and persistent JSON storage for seamless productivity.
-                    </p>
-                    <div class="flex flex-wrap gap-3 mb-8">
-                        <span class="px-4 py-2 bg-rust-500/20 text-rust-300 rounded-xl text-sm font-semibold border border-rust-500/30">Tauri</span>
-                        <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl text-sm font-semibold border border-blue-500/30">TypeScript</span>
-                        <span class="px-4 py-2 bg-cyan-500/20 text-cyan-300 rounded-xl text-sm font-semibold border border-cyan-500/30">Tailwind CSS</span>
-                        <span class="px-4 py-2 bg-green-500/20 text-green-300 rounded-xl text-sm font-semibold border border-green-500/30">Cross-Platform</span>
-                    </div>
-                    <div class="text-gray-400 font-medium">✨ GUI Interface • 🔔 Notifications • 💾 JSON Persistence</div>
-                </div>
-
-                <!-- RustyBoot -->
-                <div class="card-hover glass-effect border border-slate-600/50 rounded-3xl p-10 intersection-observer">
-                    <div class="flex items-center mb-8">
-                        <div class="project-icon w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-6 shadow-lg">
-                            <span class="text-white text-2xl">🚀</span>
-                        </div>
-                        <h3 class="text-3xl font-black text-white">RustyBoot</h3>
-                    </div>
-                    <p class="text-gray-300 mb-8 leading-relaxed text-lg">
-                        A robust Rust-based bootloader engineered for reliability and performance. 
-                        Capable of booting into ext partitions with low-level system control and modern architecture.
-                    </p>
-                    <div class="flex flex-wrap gap-3 mb-8">
-                        <span class="px-4 py-2 bg-rust-500/20 text-rust-300 rounded-xl text-sm font-semibold border border-rust-500/30">Rust</span>
-                        <span class="px-4 py-2 bg-purple-500/20 text-purple-300 rounded-xl text-sm font-semibold border border-purple-500/30">Bootloader</span>
-                        <span class="px-4 py-2 bg-orange-500/20 text-orange-300 rounded-xl text-sm font-semibold border border-orange-500/30">Low-Level</span>
-                        <span class="px-4 py-2 bg-red-500/20 text-red-300 rounded-xl text-sm font-semibold border border-red-500/30">System</span>
-                    </div>
-                    <div class="text-gray-400 font-medium">⚡ Fast Boot • 🗂️ EXT Support • 🛡️ Secure</div>
-                </div>
-
-                <!-- ls-rs -->
-                <div class="card-hover glass-effect border border-slate-600/50 rounded-3xl p-10 intersection-observer">
-                    <div class="flex items-center mb-8">
-                        <div class="project-icon w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mr-6 shadow-lg">
-                            <span class="text-white text-2xl">📁</span>
-                        </div>
-                        <h3 class="text-3xl font-black text-white">ls-rs</h3>
-                    </div>
-                    <p class="text-gray-300 mb-8 leading-relaxed text-lg">
-                        A modern Rust implementation of the classic ls command. 
-                        Enhanced with improved performance, better formatting, and additional features while maintaining familiar syntax.
-                    </p>
-                    <div class="flex flex-wrap gap-3 mb-8">
-                        <span class="px-4 py-2 bg-rust-500/20 text-rust-300 rounded-xl text-sm font-semibold border border-rust-500/30">Rust</span>
-                        <span class="px-4 py-2 bg-green-500/20 text-green-300 rounded-xl text-sm font-semibold border border-green-500/30">CLI Tool</span>
-                        <span class="px-4 py-2 bg-gray-500/20 text-gray-300 rounded-xl text-sm font-semibold border border-gray-500/30">Unix Utils</span>
-                        <span class="px-4 py-2 bg-yellow-500/20 text-yellow-300 rounded-xl text-sm font-semibold border border-yellow-500/30">Performance</span>
-                    </div>
-                    <div class="text-gray-400 font-medium">🚄 Lightning Fast • 🎨 Enhanced Display • 🔧 Drop-in Replacement</div>
-                </div>
-
-                <!-- Rusty-Checker -->
-                <div class="card-hover glass-effect border border-slate-600/50 rounded-3xl p-10 intersection-observer">
-                    <div class="flex items-center mb-8">
-                        <div class="project-icon w-16 h-16 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center mr-6 shadow-lg">
-                            <span class="text-white text-2xl">🔍</span>
-                        </div>
-                        <h3 class="text-3xl font-black text-white">Rusty-Checker</h3>
-                    </div>
-                    <p class="text-gray-300 mb-8 leading-relaxed text-lg">
-                        An intelligent RAM anomaly detection system built with Rust. 
-                        Monitors memory patterns, detects irregularities, and provides real-time analysis for system health monitoring.
-                    </p>
-                    <div class="flex flex-wrap gap-3 mb-8">
-                        <span class="px-4 py-2 bg-rust-500/20 text-rust-300 rounded-xl text-sm font-semibold border border-rust-500/30">Rust</span>
-                        <span class="px-4 py-2 bg-red-500/20 text-red-300 rounded-xl text-sm font-semibold border border-red-500/30">Memory Analysis</span>
-                        <span class="px-4 py-2 bg-pink-500/20 text-pink-300 rounded-xl text-sm font-semibold border border-pink-500/30">Anomaly Detection</span>
-                        <span class="px-4 py-2 bg-indigo-500/20 text-indigo-300 rounded-xl text-sm font-semibold border border-indigo-500/30">Monitoring</span>
-                    </div>
-                    <div class="text-gray-400 font-medium">🧠 Smart Detection • 📊 Real-time Analysis • ⚠️ Early Warning</div>
-                </div>
-            </div>
+  <!-- Contributions / Ecosystem Impact -->
+  <section id="contrib" class="py-20 md:py-28">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
+        <div class="flex-1">
+          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Ecosystem Contributions</h2>
+          <p class="text-base md:text-lg font-medium max-w-3xl">Contributed patches, issue triage and architecture exploration across desktop tooling (Tauri), embedded / ISA work (RISC-V) and low-level crates (cortex-a).</p>
         </div>
-    </section>
-
-    <!-- About -->
-    <section id="about" class="py-20 bg-slate-950 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-rust-900/10 via-transparent to-blue-900/10"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-20 intersection-observer">
-                <h2 class="text-5xl md:text-7xl font-black mb-8">
-                    <span class="bg-gradient-to-r from-rust-400 to-rust-600 bg-clip-text text-transparent">Why Rust?</span>
-                </h2>
-                <p class="text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
-                    The Rusty-Suite leverages Rust's unique advantages to deliver exceptional software experiences
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                <div class="feature-card text-center p-10 rounded-3xl border border-slate-700/50 intersection-observer">
-                    <div class="w-20 h-20 bg-gradient-to-r from-rust-500 to-rust-600 rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl">
-                        <span class="text-white text-3xl">⚡</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-6">Blazing Fast</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">
-                        Zero-cost abstractions and compile-time optimizations ensure maximum performance in every application.
-                        No runtime overhead, just pure speed.
-                    </p>
-                </div>
-
-                <div class="feature-card text-center p-10 rounded-3xl border border-slate-700/50 intersection-observer">
-                    <div class="w-20 h-20 bg-gradient-to-r from-rust-500 to-rust-600 rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl">
-                        <span class="text-white text-3xl">🌐</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-6">Cross-Platform</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">
-                        Write once, run everywhere. Rust's ecosystem enables seamless deployment across all major platforms.
-                    </p>
-                </div>
-
-                <div class="feature-card text-center p-10 rounded-3xl border border-slate-700/50 intersection-observer">
-                    <div class="w-20 h-20 bg-gradient-to-r from-rust-500 to-rust-600 rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl">
-                        <span class="text-white text-3xl">🛡️</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-6">Memory Safe</h3>
-                    <p class="text-gray-400 leading-relaxed text-lg">
-                        Eliminate entire classes of bugs with Rust's ownership model, lifetimes, and borrow checker.
-                        Security by design — without garbage collection.
-                    </p>
-                </div>
-            </div>
+        <div class="flex gap-3 flex-wrap">
+          <a href="https://github.com/tauri-apps/tauri" target="_blank" class="btn outline" rel="noopener">Tauri</a>
+          <a href="https://github.com/rust-embedded/riscv" target="_blank" class="btn outline" rel="noopener">RISC-V</a>
+          <a href="https://github.com/rust-embedded/cortex-ar" target="_blank" class="btn outline" rel="noopener">cortex-ar</a>
         </div>
-    </section>
+      </header>
+    </div>
+    <div class="mt-24 divider"></div>
+  </section>
 
-    <!-- Contact -->
-    <section id="contact" class="py-20 bg-slate-900 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-rust-900/20 via-transparent to-purple-900/20"></div>
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16 intersection-observer">
-                <h2 class="text-5xl md:text-7xl font-black mb-8">
-                    <span class="bg-gradient-to-r from-rust-400 to-rust-600 bg-clip-text text-transparent">Get In Touch</span>
-                </h2>
-                <p class="text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-                    Ready to collaborate or learn more about the Rusty-Suite? Let's build something amazing together.
-                </p>
-            </div>
+  <!-- Tooling / Install -->
+  <section id="tooling" class="py-20 md:py-28">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <header class="mb-12">
+        <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-4">Install & Integrate</h2>
+        <p class="max-w-2xl text-base md:text-lg font-medium">Reproducible builds? Add <code class="font-mono bg-black text-white px-2 py-1 rounded-md border-2 border-black">--locked</code>.</p>
+      </header>
+      <div class="grid md:grid-cols-2 gap-10">
+        <div class="nb-card p-6">
+          <h3 class="font-display font-bold text-xl mb-4">CLI Installs</h3>
+          <pre class="code-block !m-0 rotate-[-1deg]"><code># install ls-rs
+cargo install ls-rs --locked
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                <!-- Contact Info -->
-                <div class="intersection-observer">
-                    <div class="glass-effect rounded-3xl p-10 border border-slate-600/50">
-                        <h3 class="text-3xl font-bold text-white mb-8">Let's Connect</h3>
-                        <div class="space-y-6">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-gradient-to-r from-rust-500 to-rust-600 rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-white font-semibold">Email</p>
-                                    <p class="text-gray-400">kushalmeghani708@gmail.com</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-gradient-to-r from-rust-500 to-rust-600 rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-white font-semibold">GitHub</p>
-                                    <p class="text-gray-400">KushalMeghani1644</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-12 flex flex-col sm:flex-row gap-4">
-                            <a href="mailto:kushalmeghani708@gmail.com" class="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-rust-500 to-rust-600 hover:from-rust-600 hover:to-rust-700 text-white font-bold rounded-2xl transition-all transform hover:scale-105 shadow-xl">
-                                <svg class="mr-3 w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                                Send Email
-                            </a>
-                            <a href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener" class="group inline-flex items-center justify-center px-8 py-4 glass-effect text-white font-bold rounded-2xl transition-all transform hover:scale-105 border border-slate-600 hover:border-rust-400">
-                                <svg class="mr-3 w-5 h-5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                </svg>
-                                View GitHub
-                            </a>
-                        </div>
-                    </div>
-                </div>
+# memory analyzer
+cargo install rusty_checker --locked
 
-                <!-- Contact Form -->
-                <div class="intersection-observer">
-                    <form class="contact-form rounded-3xl p-10" id="contact-form">
-                        <h3 class="text-2xl font-bold text-white mb-8">Send a Message</h3>
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-300 mb-2" for="name">Name</label>
-                                <input id="name" name="name" type="text" class="contact-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-400" placeholder="Your name" required />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-300 mb-2" for="email">Email</label>
-                                <input id="email" name="email" type="email" class="contact-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-400" placeholder="your.email@example.com" required />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-300 mb-2" for="subject">Subject</label>
-                                <input id="subject" name="subject" type="text" class="contact-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-400" placeholder="Project collaboration" />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-300 mb-2" for="message">Message</label>
-                                <textarea id="message" name="message" rows="5" class="contact-input w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 resize-none" placeholder="Tell me about your project or ideas..." required></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-gradient-to-r from-rust-500 to-rust-600 hover:from-rust-600 hover:to-rust-700 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-105 shadow-xl">
-                                Send Message
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+# update all installed
+cargo install-update -a
+</code></pre>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-slate-950 border-t border-slate-800 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <div>
-                    <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-10 h-10 rust-gradient rounded-xl flex items-center justify-center">
-                            <span class="text-white font-bold text-lg">⚙️</span>
-                        </div>
-                        <span class="text-2xl font-bold text-white">Rusty-Suite</span>
-                    </div>
-                    <p class="text-gray-400 leading-relaxed">
-                        Building the future with Rust. Performance, safety, and elegance in every line of code.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-6">Projects</h4>
-                    <ul class="space-y-3 text-gray-400">
-                        <li><a href="#projects" class="hover:text-rust-400 transition-colors">RustyTodos</a></li>
-                        <li><a href="#projects" class="hover:text-rust-400 transition-colors">RustyBoot</a></li>
-                        <li><a href="#projects" class="hover:text-rust-400 transition-colors">ls-rs</a></li>
-                        <li><a href="#projects" class="hover:text-rust-400 transition-colors">Rusty-Checker</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold text-white mb-6">Connect</h4>
-                    <div class="flex space-x-4">
-                        <a href="mailto:kushalmeghani708@gmail.com" class="w-12 h-12 bg-gradient-to-r from-rust-500 to-rust-600 rounded-xl flex items-center justify-center hover:scale-110 transition-transform" aria-label="Email">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </a>
-                        <a href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener" class="w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl flex items-center justify-center hover:scale-110 transition-transform" aria-label="GitHub">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-slate-800 mt-12 pt-8 text-center">
-                <p class="text-gray-400">&copy; 2025 Rusty-Suite. Crafted with 🦀 and ❤️ | Built with Rust for the future</p>
-            </div>
+        <div class="nb-card p-6">
+          <h3 class="font-display font-bold text-xl mb-4">Desktop (Tauri)</h3>
+          <pre class="code-block !m-0 rotate-1"><code># clone & build RustyTodos
+git clone https://github.com/KushalMeghani1644/RustyTodos
+cd RustyTodos
+cargo tauri build
+</code></pre>
         </div>
-    </footer>
+        <div class="nb-card p-6 md:col-span-2">
+          <h3 class="font-display font-bold text-xl mb-4">System / Boot Experiments</h3>
+          <pre class="code-block !m-0 rotate-2"><code># RustyBoot (experimental!)
+git clone https://github.com/KushalMeghani1644/RustyBoot
+cd RustyBoot
+# read docs before running on real hardware
+</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="mt-24 divider"></div>
+  </section>
 
-    <script>
-        // Intersection Observer for reveal animations
-        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-        }, observerOptions);
-        document.querySelectorAll('.intersection-observer').forEach(el => observer.observe(el));
+  <!-- Articles / Social -->
+  <section id="articles" class="py-20 md:py-28">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
+        <div class="flex-1">
+          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Writing & Social</h2>
+          <p class="text-base md:text-lg font-medium max-w-2xl">Deep dives & experiments. Posts often start as notes inside repos. Follow along.</p>
+        </div>
+        <div class="flex gap-3 flex-wrap">
+          <a href="https://hashnode.com/@kushalmeghani" target="_blank" class="btn" rel="noopener">Hashnode</a>
+          <a href="https://dev.to/kushalmeghani1644" target="_blank" class="btn secondary" rel="noopener">Dev.to</a>
+          <a href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" class="btn outline" style="--c:#ff6b3d" rel="noopener">Bluesky</a>
+        </div>
+      </header>
+      <div class="grid md:grid-cols-3 gap-8">
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-xl mb-2">Designing Command-Line UX</h3>
+          <p class="text-sm leading-relaxed mb-4">Color, pacing, ergonomics & error clarity for terminals — consistent output grammar and deliberate emphasis.</p>
+          <a href="https://dev.to/kushalmeghani1644" target="_blank" rel="noopener" class="btn mt-auto">Read →</a>
+        </article>
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-xl mb-2">Memory Watching Patterns</h3>
+          <p class="text-sm leading-relaxed mb-4">Lightweight anomaly heuristics before full profilers. Techniques inside rusty_checker.</p>
+          <a href="https://hashnode.com/@kushalmeghani" target="_blank" rel="noopener" class="btn secondary mt-auto">Read →</a>
+        </article>
+        <article class="nb-card p-5 flex flex-col">
+          <h3 class="font-display font-bold text-xl mb-2">Bootloader Tinkering Log</h3>
+          <p class="text-sm leading-relaxed mb-4">Incremental notes from learning to keep Rust alive early in boot flow.</p>
+          <a href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" rel="noopener" class="btn outline mt-auto" style="--c:#ff6b3d">Updates →</a>
+        </article>
+      </div>
+    </div>
+    <div class="mt-24 divider"></div>
+  </section>
 
-        // Counters (trigger when stats section enters viewport)
-        function animateCounters() {
-            document.querySelectorAll('[data-counter]').forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-counter'), 10);
-                const duration = 2000;
-                const step = target / (duration / 16);
-                let current = 0;
-                const timer = setInterval(() => {
-                    current += step;
-                    if (current >= target) { counter.textContent = target; clearInterval(timer); }
-                    else { counter.textContent = Math.floor(current); }
-                }, 16);
-            });
-        }
-        const statsSection = document.getElementById('stats');
-        if (statsSection) {
-            const statsObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) { animateCounters(); statsObserver.unobserve(entry.target); }
-                });
-            }, { threshold: 0.4 });
-            statsObserver.observe(statsSection);
-        }
+  <!-- Contact -->
+  <section id="contact" class="py-20 md:py-28">
+    <div class="max-w-5xl mx-auto px-4 md:px-8">
+      <header class="mb-10">
+        <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Contact</h2>
+        <p class="text-base md:text-lg font-medium max-w-2xl">Collaboration, questions, improvements or Rust chatter. Email opens your client.</p>
+      </header>
+      <div class="grid md:grid-cols-2 gap-10">
+        <form id="contactForm" class="nb-card p-6 flex flex-col gap-4" autocomplete="off">
+          <div>
+            <label class="font-mono text-xs font-bold block mb-1" for="name">Name</label>
+            <input id="name" name="name" required class="w-full border-4 border-black rounded-xl px-4 py-2 bg-white dark:bg-ink focus-ring font-medium" placeholder="Ferris" />
+          </div>
+          <div>
+            <label class="font-mono text-xs font-bold block mb-1" for="email">Email</label>
+            <input id="email" name="email" type="email" required class="w-full border-4 border-black rounded-xl px-4 py-2 bg-white dark:bg-ink focus-ring font-medium" placeholder="you@example.dev" />
+          </div>
+          <div>
+            <label class="font-mono text-xs font-bold block mb-1" for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required class="w-full border-4 border-black rounded-xl px-4 py-2 bg-white dark:bg-ink focus-ring font-medium" placeholder="Let's build..." ></textarea>
+          </div>
+          <button type="submit" class="btn self-start">Send Email</button>
+          <p id="contactStatus" class="hidden text-sm font-mono font-semibold mt-2"></p>
+        </form>
+        <div class="flex flex-col gap-6">
+          <div class="nb-card p-6 rotate-1">
+            <h3 class="font-display font-bold text-xl mb-3">Direct</h3>
+            <ul class="space-y-2 text-sm font-mono">
+              <li><strong>Email:</strong> <a class="link-brute" href="mailto:kushalmeghani708@gmail.com">kushalmeghani708@gmail.com</a></li>
+              <li><strong>GitHub:</strong> <a class="link-brute" href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener">@KushalMeghani1644</a></li>
+              <li><strong>GitLab:</strong> <a class="link-brute" href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener">@KushalMeghani1644</a></li>
+              <li><strong>Bluesky:</strong> <a class="link-brute" href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" rel="noopener">profile</a></li>
+            </ul>
+          </div>
+          <div class="nb-card p-6 -rotate-1">
+            <h3 class="font-display font-bold text-xl mb-3">Stack</h3>
+            <p class="text-sm leading-relaxed font-medium">Rust stable/nightly, cargo, Tauri, cross-compilation, minimal JS sprinkles. Opinionated, tactile interface choices.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-24 divider"></div>
+  </section>
 
-        // Smooth scroll for on-page links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
-                const href = anchor.getAttribute('href');
-                if (!href || href === '#') return;
-                const target = document.querySelector(href);
-                if (!target) return;
-                e.preventDefault();
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
+  <!-- Footer -->
+  <footer class="py-16">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <div class="grid md:grid-cols-4 gap-10 mb-12">
+        <div>
+          <h3 class="font-display font-extrabold text-xl mb-3">Rusty Suite</h3>
+          <p class="text-sm font-medium leading-relaxed">Loud design, quiet reliability. Star the repos if useful. 🦀</p>
+        </div>
+        <div>
+          <h4 class="font-mono font-bold text-sm mb-3">Projects</h4>
+          <ul class="space-y-2 text-sm font-medium">
+            <li><a href="#projects" class="link-brute">RustyTodos</a></li>
+            <li><a href="#projects" class="link-brute">RustyBoot</a></li>
+            <li><a href="#projects" class="link-brute">rusty_checker</a></li>
+            <li><a href="#projects" class="link-brute">ls-rs</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-mono font-bold text-sm mb-3">Social</h4>
+          <ul class="space-y-2 text-sm font-medium">
+            <li><a href="https://hashnode.com/@kushalmeghani" target="_blank" rel="noopener" class="link-brute">Hashnode</a></li>
+            <li><a href="https://dev.to/kushalmeghani1644" target="_blank" rel="noopener" class="link-brute">Dev.to</a></li>
+            <li><a href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" rel="noopener" class="link-brute">Bluesky</a></li>
+            <li><a href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener" class="link-brute">GitLab</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-mono font-bold text-sm mb-3">Philosophy</h4>
+          <p class="text-sm font-medium leading-relaxed">Modern ergonomics. Metal touching codes, complete transparency.</p>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-xs font-semibold">
+        <p>&copy; 2025 Kushal Meghani • Rusty Suite</p>
+  <p>Crafted for clarity & performance • Built for the web</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Minimal Script -->
+  <script>
+    (function(){
+      const root = document.documentElement;
+      const themeBtn = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      function applyTheme(t){
+        root.setAttribute('data-theme', t);
+        localStorage.setItem('rusty-theme', t);
+        themeIcon.textContent = t === 'dark' ? '🌙' : '☀️';
+        themeBtn?.setAttribute('aria-pressed', t==='dark');
+        if(t==='dark') root.classList.add('dark'); else root.classList.remove('dark');
+      }
+      function currentTheme(){ return root.getAttribute('data-theme') || 'light'; }
+      themeBtn?.addEventListener('click', ()=> applyTheme(currentTheme()==='dark'?'light':'dark'));
+      // Sync with system preference if user hasn't explicitly chosen
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      mq.addEventListener('change', e => { if(!localStorage.getItem('rusty-theme')) applyTheme(e.matches ? 'dark' : 'light'); });
+      // Scroll spy
+      const navLinks = Array.from(document.querySelectorAll('.nav-link[data-nav]'));
+  const sections = navLinks.map(l => document.getElementById(l.getAttribute('data-nav'))).filter(Boolean);
+      const observer = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){
+            const id = entry.target.id;
+            navLinks.forEach(a=> a.classList.toggle('outline', a.getAttribute('data-nav')!==id));
+          }
         });
-
-        // Mobile menu
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (mobileMenuBtn && mobileMenu) {
-            mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        }
-
-        // Nav style on scroll
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            const scrolled = window.scrollY > 100;
-            nav.style.background = scrolled ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.05)';
-            nav.style.borderBottom = scrolled ? '1px solid rgba(234, 121, 67, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)';
-        });
-
-        // Particle system
-        function createParticles() {
-            const particleContainer = document.querySelector('.fixed.inset-0');
-            const particleCount = 50;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particles');
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
-                particleContainer.appendChild(particle);
-            }
-        }
-
-        // Contact form → mailto
-        const contactForm = document.getElementById('contact-form');
-        if (contactForm) {
-            contactForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                const name = formData.get('name') || '';
-                const email = formData.get('email') || '';
-                const subject = formData.get('subject') || 'Contact from Rusty-Suite';
-                const message = formData.get('message') || '';
-                const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-                window.location.href = `mailto:kushalmeghani708@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-                const button = this.querySelector('button');
-                const originalText = button.textContent;
-                button.textContent = 'Message Sent!';
-                button.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                setTimeout(() => { button.textContent = originalText; button.style.background = ''; this.reset(); }, 3000);
-            });
-        }
-
-        // Initialize particles and slight load delay
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            setTimeout(() => document.body.classList.add('loaded'), 500);
-        });
-
-        // Hero typing (re-run once for the fancy caret removal)
-        function typeWriter() {
-            const text = "Building the future with Rust";
-            const element = document.querySelector('.typing-animation');
-            if (!element) return;
-            element.style.width = '0';
-            element.textContent = '';
-            let i = 0;
-            const timer = setInterval(() => {
-                if (i < text.length) { element.textContent += text.charAt(i); i++; }
-                else { clearInterval(timer); setTimeout(() => { element.style.borderRight = 'none'; }, 1000); }
-            }, 100);
-        }
-        setTimeout(typeWriter, 1000);
-
-        // Simple parallax on hero
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const heroSection = document.getElementById('home');
-            if (heroSection) heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
-        });
-
-        // Cursor trail sparkle
-        document.addEventListener('mousemove', (e) => {
-            const cursor = document.createElement('div');
-            Object.assign(cursor.style, {
-                position: 'fixed', left: e.clientX + 'px', top: e.clientY + 'px',
-                width: '6px', height: '6px', background: 'rgba(234, 121, 67, 0.6)',
-                borderRadius: '50%', pointerEvents: 'none', zIndex: 9999, transition: 'opacity 0.5s ease'
-            });
-            document.body.appendChild(cursor);
-            setTimeout(() => { cursor.style.opacity = '0'; setTimeout(() => cursor.remove(), 500); }, 100);
-        });
-    </script>
-
-    
+      }, { rootMargin:'-50% 0px -49% 0px', threshold:[0,1] });
+      sections.forEach(s=> observer.observe(s));
+      // Contact form
+      const contactForm = document.getElementById('contactForm');
+      contactForm?.addEventListener('submit', (e)=> {
+        e.preventDefault();
+        const name = contactForm.name.value.trim();
+        const email = contactForm.email.value.trim();
+        const message = contactForm.message.value.trim();
+        const subject = encodeURIComponent('Rusty Suite Contact');
+        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+        window.location.href = `mailto:kushalmeghani708@gmail.com?subject=${subject}&body=${body}`;
+        const status = document.getElementById('contactStatus');
+        if(status){ status.textContent = 'Opening mail client…'; status.classList.remove('hidden'); setTimeout(()=> status.classList.add('hidden'), 4000); }
+        contactForm.reset();
+      });
+      // Reduce motion friendly hover (optional)
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        document.querySelectorAll('.btn').forEach(b=> b.style.transition='none');
+      }
+    })();
+  </script>
 </body>
 </html>
