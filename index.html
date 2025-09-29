@@ -10,23 +10,29 @@
     (function(){
       try {
         const saved = localStorage.getItem('rusty-theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = saved || (prefersDark ? 'dark' : 'light');
+        // Dark is now the default unless user explicitly chose otherwise
+        const theme = saved || 'dark';
         const root = document.documentElement;
         root.setAttribute('data-theme', theme);
         if(theme==='dark') root.classList.add('dark');
-      } catch(e) { /* noop */ }
+      } catch(e) { /* ignore */ }
     })();
   </script>
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Tailwind Config then CDN -->
   <script>
+    tailwind = window.tailwind || {};
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { mono: ['JetBrains Mono','ui-monospace','SFMono-Regular', 'Menlo', 'monospace'], sans: ['Inter','system-ui','sans-serif'], display:['Inter','system-ui','sans-serif'] },
+          fontFamily: {
+            mono: ['JetBrains Mono','ui-monospace','SFMono-Regular','Menlo','monospace'],
+            sans: ['Inter','system-ui','sans-serif'],
+            display: ['Inter','system-ui','sans-serif']
+          },
           colors: { ink:'#0f0f11', paper:'#f8f8f2', accent:'#ff6b3d', accent2:'#1EAEDB', accent3:'#FFD60A', acid:'#39FF14' },
           boxShadow: { brute:'4px 4px 0 0 #000', 'brute-sm':'2px 2px 0 0 #000' },
           rotate: { 1:'1deg', 2:'2deg', 3:'3deg', '-1':'-1deg', '-2':'-2deg' }
@@ -34,6 +40,7 @@
       }
     };
   </script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root { --nb-bg:#fefefe; --nb-ink:#0f0f11; --nb-border:#000; --nb-accent:#ff6b3d; }
     [data-theme='dark'] { --nb-bg:#0f0f11; --nb-ink:#f8f8f2; --nb-border:#f8f8f2; }
@@ -41,6 +48,18 @@
     html { scroll-behavior: smooth; }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body { font-family: Inter, system-ui, sans-serif; background: var(--nb-bg); color: var(--nb-ink); transition: background-color .35s, color .35s; }
+  /* Accessible selection colors (override inline class selection) */
+  ::selection { background: var(--nb-accent); color:#000; }
+  [data-theme='dark'] ::selection { background: #ffb899; color:#000; }
+  /* Contact form inputs: ensure readable text & placeholders in both themes */
+  #contact input, #contact textarea, #contact select {
+    background-color: var(--nb-bg) !important;
+    color: var(--nb-ink) !important;
+    caret-color: var(--nb-accent);
+  }
+  #contact input::placeholder, #contact textarea::placeholder { color: #555; }
+  [data-theme='dark'] #contact input::placeholder,
+  [data-theme='dark'] #contact textarea::placeholder { color: #cfcfca; }
     .nb-card { background: var(--nb-bg); border:4px solid var(--nb-border); box-shadow:4px 4px 0 0 var(--nb-border); border-radius:1.25rem; position:relative; }
     .btn { --c:var(--nb-ink); --bg:var(--nb-accent); display:inline-flex; align-items:center; gap:.5rem; font-weight:700; font-family:Inter, sans-serif; background:var(--bg); color:var(--nb-ink); border:4px solid #000; box-shadow:4px 4px 0 0 #000; padding:.75rem 1.15rem; border-radius:1rem; line-height:1; font-size:.9rem; position:relative; transition:.15s transform; }
     .btn:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 0 #000; }
@@ -68,8 +87,9 @@
         <span class="font-extrabold font-display text-lg md:text-xl leading-none">Rusty Suite</span>
       </a>
       <nav class="flex items-center gap-2 overflow-x-auto py-2" aria-label="Primary">
-        <a href="#home" data-nav="home" class="btn outline nav-link">Home</a>
-        <a href="#projects" data-nav="projects" class="btn outline nav-link">Projects</a>
+  <a href="#home" data-nav="home" class="btn outline nav-link">Home</a>
+  <a href="#latest" data-nav="latest" class="btn outline nav-link">Latest</a>
+  <a href="#projects" data-nav="projects" class="btn outline nav-link">Projects</a>
   <a href="#tooling" data-nav="tooling" class="btn outline nav-link">Tooling</a>
   <a href="#contrib" data-nav="contrib" class="btn outline nav-link">Contrib</a>
         <a href="#articles" data-nav="articles" class="btn outline nav-link">Writing</a>
@@ -127,6 +147,63 @@ cargo install ls-rs --locked</code></pre>
       </aside>
     </div>
     <div class="mt-20 divider"></div>
+  </section>
+
+  <!-- Latest Work (fixed & properly placed) -->
+  <section id="latest" class="py-20 md:py-28">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
+        <div class="flex-1">
+          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Latest Work</h2>
+          <p class="text-base md:text-lg font-medium max-w-2xl">Active architecture exploration & low-level evolution. Highlighting the newest deep‑dive build.</p>
+        </div>
+        <div class="flex gap-3 flex-wrap">
+          <a href="#projects" class="btn outline">More Projects</a>
+          <a href="#contrib" class="btn outline">Contributions</a>
+        </div>
+      </header>
+  <div class="grid grid-cols-1 gap-10">
+        <!-- RustyBoot-RISCV -->
+        <article class="nb-card p-6 flex flex-col relative overflow-hidden">
+          <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-accent/20 border-4 border-black rotate-12"></div>
+          <h3 class="font-display font-bold text-2xl mb-2 relative">RustyBoot-RISCV <span class="align-middle text-[11px] font-mono font-bold px-2 py-1 bg-black text-white rounded-md ml-2">WIP</span></h3>
+          <p class="text-sm font-medium leading-relaxed mb-3 relative">Minimalist, modular RISC-V bootloader inspired by the original <span class="font-mono">RustyBoot</span> (UEFI/x86). Focus: early bring-up, memory init, partition & FS probing, ELF kernel handoff.</p>
+          <ul class="text-[11px] font-mono space-y-1 mb-4 relative">
+            <li>Arch: riscv64 (virt/QEMU)</li>
+            <li>Planned: UART · virtio · MBR/GPT · EXT2/3/4 · ELF load</li>
+            <li>Design: no_std • modular drivers</li>
+          </ul>
+          <details class="relative mb-4 group">
+            <summary class="cursor-pointer text-[11px] font-mono font-bold mb-2 select-none">feature notes</summary>
+            <ul class="text-[11px] font-mono space-y-1 pl-1">
+              <li>_start & early UART logging</li>
+              <li>Frame allocator groundwork</li>
+              <li>Partition + FS scanning path</li>
+              <li>Virtio abstraction shaping</li>
+              <li>ELF parsing jump target</li>
+            </ul>
+          </details>
+          <div class="mt-auto flex flex-col sm:flex-row gap-3 relative">
+            <a class="btn" href="https://github.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener">GitHub</a>
+            <a class="btn outline" href="https://gitlab.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener">GitLab</a>
+          </div>
+          <div class="mt-6 relative space-y-3">
+            <pre class="code-block !m-0 text-xs"><code># clone (HTTPS)
+git clone https://github.com/KushalMeghani1644/RustyBoot-RISCV
+cd RustyBoot-RISCV
+# run in QEMU (future)
+# qemu-system-riscv64 ...
+
+# mirror (SSH)
+git clone git@github.com:KushalMeghani1644/RustyBoot-RISCV.git
+</code></pre>
+            <p class="text-[11px] font-mono font-semibold">Note: test in VM/QEMU while early memory + device flows evolve.</p>
+          </div>
+        </article>
+        
+      </div>
+    </div>
+    <div class="mt-24 divider"></div>
   </section>
 
   <!-- Projects -->
@@ -390,6 +467,12 @@ cd RustyBoot
         if(t==='dark') root.classList.add('dark'); else root.classList.remove('dark');
       }
       function currentTheme(){ return root.getAttribute('data-theme') || 'light'; }
+      // Ensure icon reflects early-applied theme
+      (function syncThemeIcon(){
+        const t = currentTheme();
+        if(themeIcon) themeIcon.textContent = t === 'dark' ? '🌙' : '☀️';
+        if(themeBtn) themeBtn.setAttribute('aria-pressed', t==='dark');
+      })();
       themeBtn?.addEventListener('click', ()=> applyTheme(currentTheme()==='dark'?'light':'dark'));
       // Sync with system preference if user hasn't explicitly chosen
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
