@@ -1,513 +1,411 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Rusty Suite – Fast, safe Rust utilities & experiments (Tauri apps, diagnostics, bootloader tinkering) with upstream contributions to Tauri, RISC-V and cortex-a." />
-  <title>Rusty Suite • Fast, Safe Rust Tools</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <script>
-    // Early theme (dark default)
-    (function(){
-      const saved = localStorage.getItem('rusty-theme');
-      const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = saved || 'dark' || (preferDark ? 'dark' : 'light');
-      const root = document.documentElement;
-      root.setAttribute('data-theme', theme);
-      if(theme==='dark') root.classList.add('dark');
-    })();
-  </script>
-  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono','ui-monospace','monospace'],
-            display: ['Inter','system-ui','sans-serif']
-          },
-          colors: {
-            ink: '#0d0d0f',
-            accent: '#ff6b3d'
-          },
-          boxShadow: {
-            brute: '4px 4px 0 0 #000'
-          },
-          rotate: {
-            1: '1deg',
-            2: '2deg'
-          }
-        }
-      }
-    };
-  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kushal Meghani - Systems programmer & Rust enthusiast specializing in low-level development, bare-metal programming, OS development, and hardware security.">
+  <title>Kushal Meghani | Systems Programmer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root { --border: 4px; --radius: 1.1rem; }
+    :root {
+      --bg: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --text: #f5f5f5;
+      --text-muted: #a0a0a0;
+      --accent: #ff6b3d;
+      --accent-hover: #ff8c5a;
+      --border: #2a2a2a;
+      --gradient: linear-gradient(135deg, #ff6b3d 0%, #f59e0b 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    /* Ensure anchors aren't hidden under sticky header */
-    section { scroll-margin-top: 6rem; }
-    body { font-family: Inter, system-ui, sans-serif; background:#fefefe; color:#111; }
-    .dark body, body.dark { background:#0d0d0f; color:#fafafa; }
-    [data-theme=dark] { color-scheme: dark; }
-    ::selection { background:#ff6b3d; color:#000; }
-    .dark ::selection { background:#ffd60a; color:#000; }
-    .btn { position:relative; display:inline-flex; align-items:center; gap:.5rem; font-weight:700; font-size:.9rem; padding:.75rem 1.05rem; border:var(--border) solid #000; background:#ff6b3d; color:#000; border-radius:1rem; box-shadow:4px 4px 0 #000; line-height:1; text-decoration:none; transition:transform .12s, box-shadow .12s, background .2s; }
-    .btn:hover { transform:translate(-2px,-2px); box-shadow:6px 6px 0 #000; }
-    .btn:active { transform:translate(0,0); box-shadow:2px 2px 0 #000; }
-    .btn.secondary { background:#111; color:#fff; }
-    .btn.outline { background:transparent; color:inherit; }
-    .btn.outline:hover { background:#111; color:#fff; }
-    .dark .btn.outline:hover { background:#fff; color:#000; }
-    .nb-card { background:#fff; border:var(--border) solid #000; border-radius:1.25rem; box-shadow:6px 6px 0 #000; position:relative; }
-    .dark .nb-card { background:#16171a; }
-    .divider { height:2px; background:repeating-linear-gradient(90deg,#000 0 12px,transparent 12px 16px); opacity:.18; }
-    .tag { display:inline-block; background:#111; color:#fff; padding:.45rem .7rem; font-size:.63rem; font-weight:800; letter-spacing:.08em; border:3px solid #000; border-radius:.75rem; box-shadow:3px 3px 0 #000; text-transform:uppercase; }
-    .dark .tag { background:#ff6b3d; color:#000; }
-    .link-brute { position:relative; font-weight:600; text-decoration:none; border-bottom:3px solid currentColor; }
-    .link-brute:hover { background:#ff6b3d; color:#000; }
-    code, pre { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size:.75rem; }
-    pre.code-block { background:#111; color:#fff; border:4px solid #000; border-radius:1rem; padding:1rem 1.25rem; overflow:auto; line-height:1.3; }
-    .dark pre.code-block { background:#121316; }
-    .focus-ring:focus { outline:3px solid #ff6b3d; outline-offset:2px; }
-    header.site-header { backdrop-filter:blur(8px); background:rgba(255,255,255,.75); }
-    .dark header.site-header { background:rgba(15,15,18,.75); }
-    .nav-link.active { background:#ff6b3d !important; color:#000 !important; }
-    .cursor-trail-item { position:fixed; pointer-events:none; z-index:50; border:3px solid #000; border-radius:50%; opacity:.85; transition:transform .5s cubic-bezier(.6,-0.2,.4,1.2), opacity .55s linear; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    ::selection { background: var(--accent); color: #000; }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent-hover); }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,107,61,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; width: 100%; padding: 60px 0; }
+    .greeting {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-bottom: 16px;
+      padding: 8px 16px;
+      background: rgba(255,107,61,0.1);
+      border-radius: 24px;
+      border: 1px solid rgba(255,107,61,0.2);
+    }
+    .name {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tagline {
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .intro {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .social-link:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      color: var(--text);
+    }
+    .social-link svg { width: 20px; height: 20px; }
+
+    /* Skills Tags */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+    .skill-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+    }
+
+    /* Section Styles */
+    section { padding: 80px 0; }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* About Section */
+    .about-content {
+      display: grid;
+      gap: 32px;
+    }
+    .about-text { color: var(--text-muted); font-size: 1.05rem; }
+    .about-text p { margin-bottom: 20px; }
+    .about-text strong { color: var(--text); }
+
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      gap: 24px;
+    }
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+    }
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .project-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .project-link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      background: rgba(255,107,61,0.1);
+      border-radius: 6px;
+      color: var(--accent);
+    }
+    .project-desc {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      background: var(--bg);
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    /* Quote */
+    .quote-section {
+      background: var(--bg-card);
+      border-left: 4px solid var(--accent);
+      padding: 32px;
+      margin: 60px 0;
+      border-radius: 0 16px 16px 0;
+    }
+    .quote-text {
+      font-size: 1.3rem;
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .quote-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    footer p { margin-bottom: 16px; }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .footer-links a { color: var(--text-muted); }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero { min-height: auto; padding: 80px 0; }
+      section { padding: 60px 0; }
+      .social-links { gap: 8px; }
+      .social-link { padding: 10px 16px; font-size: 0.9rem; }
+    }
   </style>
 </head>
-<body class="antialiased selection:bg-accent/90 selection:text-black">
-  <!-- Site Header -->
-  <header class="site-header border-b-4 border-black sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-6">
-      <a href="#home" class="font-display font-extrabold text-xl md:text-2xl tracking-tight flex items-center gap-2">
-        <span>Rusty <span class="text-accent">Suite</span></span>
-      </a>
-      <nav class="hidden md:flex items-center gap-2 font-mono text-[11px] font-semibold">
-        <a data-nav="home" href="#home" class="btn outline nav-link">Home</a>
-        <a data-nav="latest" href="#latest" class="btn outline nav-link">Latest</a>
-        <a data-nav="projects" href="#projects" class="btn outline nav-link">Projects</a>
-        <a data-nav="contrib" href="#contrib" class="btn outline nav-link">Contrib</a>
-        <a data-nav="tooling" href="#tooling" class="btn outline nav-link">Tooling</a>
-        <a data-nav="contact" href="#contact" class="btn outline nav-link">Contact</a>
-      </nav>
-      <div class="flex items-center gap-3">
-        <a href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener" class="btn outline hidden md:inline-flex">GitHub</a>
-        <a href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener" class="btn outline hidden md:inline-flex">GitLab</a>
-        <button id="themeToggle" aria-label="Toggle theme" class="btn outline !p-2 w-11 h-11 justify-center" aria-pressed="true"><span id="themeIcon">🌙</span></button>
-      </div>
-    </div>
-  </header>
-
+<body>
   <!-- Hero -->
-  <section id="home" class="pt-16 md:pt-24 pb-20 md:pb-32">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-[minmax(0,1fr)_320px] gap-12 items-start">
-      <div>
-        <div class="flex flex-wrap gap-2 mb-6">
-          <span class="tag rotate-[-2deg]">MEMORY SAFE RUST</span>
-          <span class="tag rotate-1">LOW LEVEL</span>
-          <span class="tag -rotate-1">METAL TOUCHING</span>
-          <span class="tag rotate-2">BOOTLOADER</span>
-        </div>
-        <h1 class="font-display font-extrabold text-4xl md:text-6xl leading-[1.05] tracking-tight mb-6 max-w-2xl">
-          Bold edges. Safe, fast Rust inside.
-        </h1>
-        <p class="text-lg md:text-xl font-medium max-w-2xl mb-8">
-          A small suite of opinionated Rust utilities, experiments & desktop tools. From bootloader tinkering to cross‑platform Tauri apps & ergonomically loud CLIs.
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="greeting">👋 Hello, I'm</span>
+        <h1 class="name">Kushal Meghani</h1>
+        <p class="tagline">Systems Programmer &amp; Rust Enthusiast</p>
+        <p class="intro">
+          I specialize in <strong>low-level development</strong>, <strong>bare-metal programming</strong>, 
+          <strong>OS development</strong>, and <strong>hardware security</strong>. I build memory-safe tools, 
+          UEFI bootloaders, and security research utilities, contributing actively to open-source ecosystems.
         </p>
-        <div class="flex flex-wrap gap-4 mb-10">
-          <a href="#projects" class="btn">Explore Projects →</a>
-          <a href="#tooling" class="btn secondary">Install Tools</a>
+        
+        <div class="social-links">
+          <a href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener" class="social-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+          <a href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener" class="social-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 01-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 014.82 2a.43.43 0 01.58 0 .42.42 0 01.11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0118.6 2a.43.43 0 01.58 0 .42.42 0 01.11.18l2.44 7.51L23 13.45a.84.84 0 01-.35.94z"/></svg>
+            GitLab
+          </a>
+          <a href="mailto:kushalmeghani108@gmail.com" class="social-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            Email
+          </a>
+          <a href="https://dev.to/kushalmeghani1644" target="_blank" rel="noopener" class="social-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.42 10.05c-.18-.16-.46-.23-.84-.23H6v4.36h.58c.37 0 .65-.08.84-.23.21-.17.31-.46.31-.93v-2.03c0-.47-.11-.78-.31-.94zm14.58-6.05h-20c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2v-12c0-1.1-.9-2-2-2zm-12.04 10.64h-1.29v-5.91h1.29v5.91zm5.39-1.54c0 .45-.11.79-.34 1.01-.23.22-.58.33-1.04.33h-2.37v-5.91h2.37c.46 0 .81.11 1.04.33.23.22.34.56.34 1.01v3.23zm4.63 1.54h-3.58v-5.91h3.58v1h-2.29v1.4h2.17v1h-2.17v1.51h2.29v1z"/></svg>
+            Dev.to
+          </a>
+          <a href="https://hashnode.com/@kushalmeghani" target="_blank" rel="noopener" class="social-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.351 8.019l-6.37-6.37a5.63 5.63 0 00-7.962 0l-6.37 6.37a5.63 5.63 0 000 7.962l6.37 6.37a5.63 5.63 0 007.962 0l6.37-6.37a5.63 5.63 0 000-7.962zM12 15.953a3.953 3.953 0 110-7.906 3.953 3.953 0 010 7.906z"/></svg>
+            Hashnode
+          </a>
+          <a href="https://leetcode.com/u/KushalMeghani1644/" target="_blank" rel="noopener" class="social-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.12 1.631l3.854 4.126 5.406 5.788a1.374 1.374 0 0 0 2.005-.065l.484-.517a1.374 1.374 0 0 0-.063-1.954l-5.407-5.788a3.3 3.3 0 0 1-.675-1.023 3.253 3.253 0 0 1-.2-.573 3.09 3.09 0 0 1-.036-1.322 2.938 2.938 0 0 1 .675-1.455l3.854-4.126a1.374 1.374 0 0 0 .063-1.954l-.484-.517a1.374 1.374 0 0 0-1.044-.438z"/></svg>
+            LeetCode
+          </a>
         </div>
-        <div class="nb-card p-5 max-w-2xl bg-accent/10">
-          <p class="font-mono text-xs mb-2 font-bold">install (examples)</p>
-          <pre class="code-block !p-4 !m-0"><code>cargo install rusty_checker --locked
-cargo install ls-rs --locked</code></pre>
+
+        <div class="skills">
+          <span class="skill-tag">Rust</span>
+          <span class="skill-tag">C/C++</span>
+          <span class="skill-tag">UEFI</span>
+          <span class="skill-tag">RISC-V</span>
+          <span class="skill-tag">Bare-Metal</span>
+          <span class="skill-tag">OS Dev</span>
+          <span class="skill-tag">Memory Safety</span>
+          <span class="skill-tag">Hardware Security</span>
         </div>
-        <p class="mt-6 text-sm font-mono font-semibold tracking-wide">Upstream contributions: <a class="link-brute" href="https://github.com/tauri-apps/tauri" target="_blank" rel="noopener">Tauri</a>, <a class="link-brute" href="https://github.com/rust-embedded/riscv" target="_blank" rel="noopener">RISC-V</a>, <a class="link-brute" href="https://github.com/rust-embedded/cortex-ar" target="_blank" rel="noopener">cortex-ar</a>.</p>
       </div>
-      <aside class="hidden md:block" aria-label="About Kushal Meghani">
-        <div class="nb-card p-6 space-y-4 text-sm leading-relaxed">
-          <h2 class="font-display font-bold text-xl mb-1">About Me</h2>
-          <p><strong class="font-mono text-[11px] tracking-wider">NAME</strong><br/>Kushal Meghani • India</p>
-            <p><strong class="font-mono text-[11px] tracking-wider">ROLE</strong><br/>Student / Builder</p>
-          <p><strong class="font-mono text-[11px] tracking-wider">LANG</strong><br/>Rust (main), C/C++, TS (fun), beginner Go</p>
-          <p><strong class="font-mono text-[11px] tracking-wider">FOCUS</strong><br/>Low-level & bare‑metal backend Rust experiments.</p>
-          <p><strong class="font-mono text-[11px] tracking-wider">CONTRIB</strong><br/>RISC-V, cortex-a, Tauri (expanding).</p>
-          <p><strong class="font-mono text-[11px] tracking-wider">ACHIEVEMENTS</strong><br/>UEFI bootloader prototype; RAM anomaly detector.</p>
-          <p><strong class="font-mono text-[11px] tracking-wider">DREAM</strong><br/>Prototype a Rust kernel + bootloaders; keep pushing bare‑metal crates.</p>
-          <div class="pt-1">
-            <a href="#contact" class="btn outline w-full justify-center">Contact →</a>
-          </div>
-        </div>
-      </aside>
     </div>
-    <div class="mt-20 divider"></div>
   </section>
 
-  <!-- Latest Work -->
-  <section id="latest" class="py-20 md:py-28">
-    <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
-        <div class="flex-1">
-          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Latest Work</h2>
-          <p class="text-base md:text-lg font-medium max-w-2xl">Active architecture exploration & low-level evolution. Highlighting the newest deep‑dive build.</p>
+  <!-- About -->
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title">About Me</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>
+            I'm passionate about <strong>Rust</strong>, <strong>systems programming</strong>, and 
+            <strong>hardware security research</strong>. My expertise spans UEFI bootloaders, memory management, 
+            RowHammer detection, and bare-metal development.
+          </p>
+          <p>
+            As an advocate for <strong>memory safety</strong>, <strong>reliability</strong>, and 
+            <strong>low-level performance optimization</strong>, I focus on building practical, real-world systems tools.
+          </p>
+          <p>
+            I'm a <strong>Gentoo Linux</strong> user and OS tinkerer who has compiled an operating system from source. 
+            Currently mastering <strong>VIM</strong> and <strong>Neovim</strong>, and learning <strong>Zig</strong>.
+          </p>
+          <p>
+            I'm an active <strong>open-source contributor</strong>. I contribute to the 
+            <a href="https://github.com/rust-embedded/riscv" target="_blank">rust-embedded/riscv</a> project, 
+            helping improve Rust's embedded ecosystem for RISC-V architectures. I also contribute to 
+            <a href="https://github.com/tauri-apps/tauri" target="_blank">Tauri</a>, the Rust-based framework 
+            for building lightweight, secure desktop applications.
+          </p>
         </div>
-        <div class="flex gap-3 flex-wrap">
-          <a href="#projects" class="btn outline">More Projects</a>
-          <a href="#contrib" class="btn outline">Contributions</a>
-        </div>
-      </header>
-      <div class="grid gap-10 md:grid-cols-2 items-stretch">
-        <!-- RustyBoot-RISCV -->
-        <article class="nb-card p-6 flex flex-col relative overflow-hidden">
-          <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-accent/20 border-4 border-black rotate-12"></div>
-          <h3 class="font-display font-bold text-2xl mb-2 relative">RustyBoot-RISCV <span class="align-middle text-[11px] font-mono font-bold px-2 py-1 bg-black text-white rounded-md ml-2">WIP</span></h3>
-          <p class="text-sm font-medium leading-relaxed mb-3 relative">Minimalist, modular RISC-V bootloader inspired by the original <span class="font-mono">RustyBoot</span> (UEFI/x86). Focus: early bring-up, memory init, partition & FS probing, ELF kernel handoff.</p>
-          <ul class="text-[11px] font-mono space-y-1 mb-4 relative">
-            <li>Arch: riscv64 (virt/QEMU)</li>
-            <li>Planned: UART · virtio · MBR/GPT · EXT2/3/4 · ELF load</li>
-            <li>Design: no_std • modular drivers</li>
-          </ul>
-          <details class="relative mb-4 group">
-            <summary class="cursor-pointer text-[11px] font-mono font-bold mb-2 select-none">feature notes</summary>
-            <ul class="text-[11px] font-mono space-y-1 pl-1">
-              <li>_start & early UART logging</li>
-              <li>Frame allocator groundwork</li>
-              <li>Partition + FS scanning path</li>
-              <li>Virtio abstraction shaping</li>
-              <li>ELF parsing jump target</li>
-            </ul>
-          </details>
-          <div class="mt-auto flex flex-col sm:flex-row gap-3 relative">
-            <a class="btn" href="https://github.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener">GitHub</a>
-            <a class="btn outline" href="https://gitlab.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener">GitLab</a>
-          </div>
-          <div class="mt-6 relative space-y-3">
-            <pre class="code-block !m-0 text-xs"><code># clone (HTTPS)
-git clone https://github.com/KushalMeghani1644/RustyBoot-RISCV
-cd RustyBoot-RISCV
-# run in QEMU (future)
-# qemu-system-riscv64 ...
-
-# mirror (SSH)
-git clone git@github.com:KushalMeghani1644/RustyBoot-RISCV.git</code></pre>
-            <p class="text-[11px] font-mono font-semibold">Note: test in VM/QEMU while early memory + device flows evolve.</p>
-          </div>
-        </article>
-        <!-- NPU-rs -->
-        <article class="nb-card p-6 flex flex-col relative overflow-hidden">
-          <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-accent/15 border-4 border-black rotate-2"></div>
-          <h3 class="font-display font-bold text-2xl mb-2 relative">NPU-rs <span class="align-middle text-[11px] font-mono font-bold px-2 py-1 bg-black text-white rounded-md ml-2">NEW</span></h3>
-          <p class="text-sm font-medium leading-relaxed mb-3 relative">NPU driver for RISC-V boards. Early userspace-friendly interfaces for inference on embedded NPUs.</p>
-          <ul class="text-[11px] font-mono space-y-1 mb-4 relative">
-            <li>Target: RISC-V</li>
-            <li>Status: active</li>
-            <li>Install: <span class="font-semibold">cargo install npu-rs</span></li>
-          </ul>
-          <details class="relative mb-4 group">
-            <summary class="cursor-pointer text-[11px] font-mono font-bold mb-2 select-none">notes</summary>
-            <ul class="text-[11px] font-mono space-y-1 pl-1">
-              <li>Driver scaffolding and device discovery</li>
-              <li>Safe Rust abstractions over low-level ops</li>
-            </ul>
-          </details>
-          <div class="mt-auto flex flex-col sm:flex-row gap-3 relative">
-            <a class="btn" href="https://github.com/KushalMeghani1644/NPU-rs" target="_blank" rel="noopener">GitHub</a>
-            <a class="btn outline" href="https://crates.io/crates/NPU-rs" target="_blank" rel="noopener">Crate</a>
-          </div>
-          <div class="mt-6 relative space-y-3">
-            <pre class="code-block !m-0 text-xs"><code># install
-cargo install npu-rs</code></pre>
-            <p class="text-[11px] font-mono font-semibold">Tip: run on a supported RISC-V target; see repo for examples.</p>
-          </div>
-        </article>
       </div>
     </div>
-    <div class="mt-24 divider"></div>
   </section>
 
   <!-- Projects -->
-  <section id="projects" class="py-20 md:py-28">
-    <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
-        <div class="flex-1">
-          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Project Showcase</h2>
-          <p class="text-base md:text-lg font-medium max-w-2xl">Utilities & experiments spanning Tauri, diagnostics, and low-level learning.</p>
-        </div>
-        <div class="flex gap-3 flex-wrap">
-          <a href="#tooling" class="btn outline">Install</a>
-          <a href="#contact" class="btn outline">Contact</a>
-        </div>
-      </header>
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <!-- RustyTodos -->
-        <article class="nb-card p-5 flex flex-col">
-          <h3 class="font-display font-bold text-lg mb-1">RustyTodos</h3>
-          <p class="text-sm font-medium leading-relaxed mb-4">Tauri desktop task manager. Local-first, keyboard-centric, intentionally verbose visuals.</p>
-          <ul class="text-[11px] font-mono space-y-1 mb-4">
-            <li>Stack: Rust · Tauri · IndexedDB</li>
-            <li>Status: active</li>
-          </ul>
-          <div class="mt-auto flex flex-col gap-2">
-            <a class="btn" href="https://github.com/KushalMeghani1644/RustyTodos/releases" target="_blank" rel="noopener">Download</a>
-            <a class="btn outline" href="https://github.com/KushalMeghani1644/RustyTodos" target="_blank" rel="noopener">Source</a>
+  <section id="projects">
+    <div class="container">
+      <h2 class="section-title">Featured Projects</h2>
+      <div class="projects-grid">
+        <a href="https://github.com/KushalMeghani1644/RustyBoot" target="_blank" rel="noopener" class="project-card">
+          <div class="project-header">
+            <h3 class="project-title">RustyBoot</h3>
+            <span class="project-link">View →</span>
           </div>
-        </article>
-        <!-- RustyBoot -->
-        <article class="nb-card p-5 flex flex-col">
-          <h3 class="font-display font-bold text-lg mb-1">RustyBoot</h3>
-          <p class="text-sm font-medium leading-relaxed mb-4">Experimental bootloader exploration. Learning path, not production. Hardware caution advised.</p>
-          <ul class="text-[11px] font-mono space-y-1 mb-4">
-            <li>Domain: systems prime</li>
-            <li>Status: evolving notes</li>
-          </ul>
-          <div class="mt-auto flex flex-col gap-2">
-            <a class="btn" href="https://github.com/KushalMeghani1644/RustyBoot" target="_blank" rel="noopener">Download</a>
-            <a class="btn outline" href="https://github.com/KushalMeghani1644/RustyBoot" target="_blank" rel="noopener">Source</a>
+          <p class="project-desc">A memory-safe, high-performance UEFI bootloader written in Rust with advanced boot features.</p>
+          <div class="project-tech">
+            <span class="tech-tag">Rust</span>
+            <span class="tech-tag">UEFI</span>
+            <span class="tech-tag">no_std</span>
           </div>
-        </article>
-        <!-- rusty_checker -->
-        <article class="nb-card p-5 flex flex-col">
-          <h3 class="font-display font-bold text-lg mb-1">rusty_checker</h3>
-          <p class="text-sm font-medium leading-relaxed mb-4">Lightweight memory anomaly & stats watcher. CLI-first with consistent output grammar.</p>
-          <ul class="text-[11px] font-mono space-y-1 mb-4">
-            <li>Crate: published</li>
-            <li>Focus: diagnostics</li>
-          </ul>
-          <div class="mt-auto flex flex-col gap-2">
-            <a class="btn" href="https://crates.io/crates/rusty_checker" target="_blank" rel="noopener">Download</a>
-            <a class="btn outline" href="https://github.com/KushalMeghani1644/Rusty-Checker" target="_blank" rel="noopener">Source</a>
+        </a>
+
+        <a href="https://github.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener" class="project-card">
+          <div class="project-header">
+            <h3 class="project-title">RustyBoot-RISCV</h3>
+            <span class="project-link">View →</span>
           </div>
-        </article>
-        <!-- ls-rs -->
-        <article class="nb-card p-5 flex flex-col">
-          <h3 class="font-display font-bold text-lg mb-1">ls-rs</h3>
-          <p class="text-sm font-medium leading-relaxed mb-4">Opinionated colorful directory lister. Clear alignment & emphasis for fast scanning.</p>
-          <ul class="text-[11px] font-mono space-y-1 mb-4">
-            <li>CLI: installable</li>
-            <li>Focus: dev UX</li>
-          </ul>
-          <div class="mt-auto flex flex-col gap-2">
-            <a class="btn" href="https://crates.io/crates/ls-rs" target="_blank" rel="noopener">Download</a>
-            <a class="btn outline" href="https://github.com/KushalMeghani1644/ls-rs" target="_blank" rel="noopener">Source</a>
+          <p class="project-desc">A minimalist RISC-V bootloader written in Rust, featuring UART support and ELF kernel loading capabilities.</p>
+          <div class="project-tech">
+            <span class="tech-tag">Rust</span>
+            <span class="tech-tag">RISC-V</span>
+            <span class="tech-tag">Bootloader</span>
           </div>
-        </article>
+        </a>
+
+        <a href="https://github.com/KushalMeghani1644/RustBerry-PI" target="_blank" rel="noopener" class="project-card">
+          <div class="project-header">
+            <h3 class="project-title">RustBerry-PI</h3>
+            <span class="project-link">View →</span>
+          </div>
+          <p class="project-desc">A Raspberry Pi inspired virtual hardware board implementation in Rust for embedded systems experimentation.</p>
+          <div class="project-tech">
+            <span class="tech-tag">Rust</span>
+            <span class="tech-tag">Embedded</span>
+            <span class="tech-tag">Virtual HW</span>
+          </div>
+        </a>
       </div>
     </div>
-    <div class="mt-24 divider"></div>
   </section>
 
-  <!-- Contributions -->
-  <section id="contrib" class="py-20 md:py-28">
-    <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <header class="mb-12 flex flex-col md:flex-row md:items-end gap-8">
-        <div class="flex-1">
-          <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Ecosystem Contributions</h2>
-          <p class="text-base md:text-lg font-medium max-w-3xl">Contributed patches, issue triage and architecture exploration across desktop tooling (Tauri), embedded / ISA work (RISC-V) and low-level crates (cortex-a).</p>
-        </div>
-        <div class="flex gap-3 flex-wrap">
-          <a href="https://github.com/tauri-apps/tauri" target="_blank" class="btn outline" rel="noopener">Tauri</a>
-          <a href="https://github.com/rust-embedded/riscv" target="_blank" class="btn outline" rel="noopener">RISC-V</a>
-          <a href="https://github.com/rust-embedded/cortex-ar" target="_blank" class="btn outline" rel="noopener">cortex-ar</a>
-        </div>
-      </header>
+  <!-- Quote -->
+  <div class="container">
+    <div class="quote-section">
+      <p class="quote-text">"I turn low-level complexity into reliable, safe, and efficient Rust solutions."</p>
+      <p class="quote-author">— Kushal Meghani</p>
     </div>
-    <div class="mt-24 divider"></div>
-  </section>
-
-  <!-- Tooling / Install -->
-  <section id="tooling" class="py-20 md:py-28">
-    <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <header class="mb-12">
-        <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-4">Install & Integrate</h2>
-        <p class="max-w-2xl text-base md:text-lg font-medium">Reproducible builds? Add <code class="font-mono bg-black text-white px-2 py-1 rounded-md border-2 border-black">--locked</code>.</p>
-      </header>
-      <div class="grid md:grid-cols-2 gap-10">
-        <div class="nb-card p-6">
-          <h3 class="font-display font-bold text-xl mb-4">CLI Installs</h3>
-          <pre class="code-block !m-0 rotate-[-1deg]"><code># install ls-rs
-cargo install ls-rs --locked
-
-# memory analyzer
-cargo install rusty_checker --locked
-
-# update all installed
-cargo install-update -a</code></pre>
-        </div>
-        <div class="nb-card p-6">
-          <h3 class="font-display font-bold text-xl mb-4">Desktop (Tauri)</h3>
-          <pre class="code-block !m-0 rotate-1"><code># clone & build RustyTodos
-git clone https://github.com/KushalMeghani1644/RustyTodos
-cd RustyTodos
-cargo tauri build</code></pre>
-        </div>
-        <article class="nb-card p-5 flex flex-col">
-          <h3 class="font-display font-bold text-xl mb-2">About me</h3>
-          <p class="text-sm leading-relaxed mb-4">Get to know more about the person behind the loud borders.</p>
-          <a href="https://hashnode.com/@kushalmeghani" target="_blank" rel="noopener" class="btn secondary mt-auto">Read →</a>
-        </article>
-        <article class="nb-card p-5 flex flex-col">
-          <h3 class="font-display font-bold text-xl mb-2">Bootloader Log</h3>
-          <p class="text-sm leading-relaxed mb-4">Incremental notes from keeping Rust alive early in boot flow.</p>
-          <a href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" rel="noopener" class="btn outline mt-auto" style="--c:#ff6b3d">Updates →</a>
-        </article>
-      </div>
-    </div>
-    <div class="mt-24 divider"></div>
-  </section>
-
-  <!-- Contact -->
-  <section id="contact" class="py-20 md:py-28">
-    <div class="max-w-5xl mx-auto px-4 md:px-8">
-      <header class="mb-10">
-        <h2 class="text-4xl md:text-5xl font-extrabold font-display mb-3">Contact</h2>
-        <p class="text-base md:text-lg font-medium max-w-2xl">Collaboration, questions, improvements or Rust chatter. Email opens your client.</p>
-      </header>
-      <div class="grid md:grid-cols-2 gap-10">
-        <form id="contactForm" class="nb-card p-6 flex flex-col gap-4" autocomplete="off">
-          <div>
-            <label class="font-mono text-xs font-bold block mb-1" for="name">Name</label>
-            <input id="name" name="name" required class="w-full border-4 border-black rounded-xl px-4 py-2 bg-white dark:bg-ink focus-ring font-medium" placeholder="Ferris" />
-          </div>
-          <div>
-            <label class="font-mono text-xs font-bold block mb-1" for="email">Email</label>
-            <input id="email" name="email" type="email" required class="w-full border-4 border-black rounded-xl px-4 py-2 bg-white dark:bg-ink focus-ring font-medium" placeholder="you@example.dev" />
-          </div>
-          <div>
-            <label class="font-mono text-xs font-bold block mb-1" for="message">Message</label>
-            <textarea id="message" name="message" rows="5" required class="w-full border-4 border-black rounded-xl px-4 py-2 bg-white dark:bg-ink focus-ring font-medium" placeholder="Let's build..." ></textarea>
-          </div>
-          <button type="submit" class="btn self-start">Send Email</button>
-          <p id="contactStatus" class="hidden text-sm font-mono font-semibold mt-2"></p>
-        </form>
-        <div class="flex flex-col gap-6">
-          <div class="nb-card p-6 rotate-1">
-            <h3 class="font-display font-bold text-xl mb-3">Direct</h3>
-            <ul class="space-y-2 text-sm font-mono">
-              <li><strong>Email:</strong> <a class="link-brute" href="mailto:kushalmeghani708@gmail.com">kushalmeghani708@gmail.com</a></li>
-              <li><strong>GitHub:</strong> <a class="link-brute" href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener">@KushalMeghani1644</a></li>
-              <li><strong>GitLab:</strong> <a class="link-brute" href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener">@KushalMeghani1644</a></li>
-              <li><strong>Bluesky:</strong> <a class="link-brute" href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" rel="noopener">profile</a></li>
-            </ul>
-          </div>
-          <div class="nb-card p-6 -rotate-1">
-            <h3 class="font-display font-bold text-xl mb-3">Stack</h3>
-            <p class="text-sm leading-relaxed font-medium">Rust stable/nightly, bare-metal, C, C++, TS sprinkles, cross-platform.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="mt-24 divider"></div>
-  </section>
+  </div>
 
   <!-- Footer -->
-  <footer class="py-16">
-    <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <div class="grid md:grid-cols-4 gap-10 mb-12">
-        <div>
-          <h3 class="font-display font-extrabold text-xl mb-3">Rusty Suite</h3>
-          <p class="text-sm font-medium leading-relaxed">Loud design, quiet reliability. Star the repos if useful. 🦀</p>
-        </div>
-        <div>
-          <h4 class="font-mono font-bold text-sm mb-3">Projects</h4>
-          <ul class="space-y-2 text-sm font-medium">
-            <li><a href="#projects" class="link-brute">RustyTodos</a></li>
-            <li><a href="#projects" class="link-brute">RustyBoot</a></li>
-            <li><a href="#projects" class="link-brute">rusty_checker</a></li>
-            <li><a href="#projects" class="link-brute">ls-rs</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-mono font-bold text-sm mb-3">Social</h4>
-          <ul class="space-y-2 text-sm font-medium">
-            <li><a href="https://hashnode.com/@kushalmeghani" target="_blank" rel="noopener" class="link-brute">Hashnode</a></li>
-            <li><a href="https://dev.to/kushalmeghani1644" target="_blank" rel="noopener" class="link-brute">Dev.to</a></li>
-            <li><a href="https://bsky.app/profile/kushalmeghani1644.bsky.social" target="_blank" rel="noopener" class="link-brute">Bluesky</a></li>
-            <li><a href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener" class="link-brute">GitLab</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-mono font-bold text-sm mb-3">Philosophy</h4>
-          <p class="text-sm font-medium leading-relaxed">Modern ergonomics. Metal touching code; complete transparency.</p>
-        </div>
+  <footer>
+    <div class="container">
+      <p>🦀 Built with passion for systems programming</p>
+      <div class="footer-links">
+        <a href="https://github.com/KushalMeghani1644" target="_blank">GitHub</a>
+        <a href="https://gitlab.com/KushalMeghani1644" target="_blank">GitLab</a>
+        <a href="https://dev.to/kushalmeghani1644" target="_blank">Dev.to</a>
+        <a href="https://hashnode.com/@kushalmeghani" target="_blank">Hashnode</a>
+        <a href="https://leetcode.com/u/KushalMeghani1644/" target="_blank">LeetCode</a>
+        <a href="mailto:kushalmeghani108@gmail.com">Email</a>
       </div>
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-xs font-semibold">
-        <p>&copy; 2025 Kushal Meghani • Rusty Suite</p>
-        <p>Crafted for clarity & performance • Built for the better</p>
-      </div>
+      <p style="margin-top: 24px; font-size: 0.9rem;">© 2025 Kushal Meghani</p>
     </div>
   </footer>
-
-  <!-- Scripts -->
-  <script>
-    (function(){
-      const root = document.documentElement;
-      const themeBtn = document.getElementById('themeToggle');
-      const themeIcon = document.getElementById('themeIcon');
-      function setTheme(t){
-        root.setAttribute('data-theme', t);
-        if(t==='dark') root.classList.add('dark'); else root.classList.remove('dark');
-        localStorage.setItem('rusty-theme', t);
-        if(themeIcon) themeIcon.textContent = t==='dark' ? '🌙' : '☀️';
-        themeBtn?.setAttribute('aria-pressed', t==='dark');
-      }
-      themeBtn?.addEventListener('click', ()=>{
-        const cur = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
-        setTheme(cur);
-      });
-      // Scroll spy
-      const navLinks = Array.from(document.querySelectorAll('.nav-link[data-nav]'));
-      const sections = navLinks.map(l=> document.getElementById(l.getAttribute('data-nav'))).filter(Boolean);
-      const io = new IntersectionObserver(entries=>{
-        entries.forEach(e=>{
-          if(e.isIntersecting){
-            const id = e.target.id;
-            navLinks.forEach(a=>{
-              a.classList.toggle('active', a.getAttribute('data-nav')===id);
-            });
-          }
-        });
-      }, { rootMargin: '-45% 0px -50% 0px', threshold:[0,1] });
-      sections.forEach(s=> io.observe(s));
-      // Contact form
-      const form = document.getElementById('contactForm');
-      form?.addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const name = form.name.value.trim();
-        const email = form.email.value.trim();
-        const msg = form.message.value.trim();
-        const subject = encodeURIComponent('Rusty Suite Contact');
-        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${msg}`);
-        window.location.href = `mailto:kushalmeghani708@gmail.com?subject=${subject}&body=${body}`;
-        const status = document.getElementById('contactStatus');
-        if(status){ status.textContent='Opening mail client…'; status.classList.remove('hidden'); setTimeout(()=> status.classList.add('hidden'), 4200); }
-        form.reset();
-      });
-      // Cursor trail (subtle)
-      (function(){
-        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        if(!window.matchMedia('(pointer:fine)').matches) return;
-        const colors=['#ff6b3d','#1EAEDB','#FFD60A','#39FF14'];
-        let last=0, active=0; const MAX=20;
-        window.addEventListener('pointermove', e=>{
-          const now = performance.now();
-            if(now-last<60||Math.random()<0.35||active>=MAX) return;
-          last=now; active++;
-          const el=document.createElement('span');
-          el.className='cursor-trail-item';
-          el.style.background=colors[Math.floor(Math.random()*colors.length)];
-          const size=9+Math.random()*6; el.style.width=size+'px'; el.style.height=size+'px';
-          el.style.left=(e.clientX-size/2)+'px'; el.style.top=(e.clientY-size/2)+'px';
-          document.body.appendChild(el);
-          requestAnimationFrame(()=>{ el.style.transform=`translate(${(Math.random()*18-9).toFixed(1)}px,${(-16-Math.random()*8).toFixed(1)}px) scale(.4)`; el.style.opacity='0'; });
-          setTimeout(()=>{ el.remove(); active--; },520);
-        }, { passive:true });
-      })();
-    })();
-  </script>
 </body>
 </html>
