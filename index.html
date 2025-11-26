@@ -7,258 +7,546 @@
   <title>Kushal Meghani | Systems Programmer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0f0f0f;
-      --bg-card: #1a1a1a;
-      --text: #f5f5f5;
-      --text-muted: #a0a0a0;
-      --accent: #ff6b3d;
-      --accent-hover: #ff8c5a;
-      --border: #2a2a2a;
-      --gradient: linear-gradient(135deg, #ff6b3d 0%, #f59e0b 100%);
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+      --text-primary: #ffffff;
+      --text-secondary: #b4b4c0;
+      --text-muted: #6b6b7b;
+      --accent-cyan: #00d4ff;
+      --accent-purple: #a855f7;
+      --accent-pink: #ec4899;
+      --gradient-main: linear-gradient(135deg, #00d4ff 0%, #a855f7 50%, #ec4899 100%);
+      --gradient-card: linear-gradient(145deg, rgba(168, 85, 247, 0.1) 0%, rgba(0, 212, 255, 0.05) 100%);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-glow: rgba(0, 212, 255, 0.3);
+      --shadow-glow: 0 0 60px rgba(0, 212, 255, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
     }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       line-height: 1.7;
       min-height: 100vh;
+      overflow-x: hidden;
     }
-    ::selection { background: var(--accent); color: #000; }
-    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
-    a:hover { color: var(--accent-hover); }
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 
-    /* Hero Section */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      position: relative;
+    ::selection { background: var(--accent-cyan); color: var(--bg-primary); }
+
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
       overflow: hidden;
     }
-    .hero::before {
+    .bg-gradient::before {
       content: '';
       position: absolute;
       top: -50%;
-      right: -20%;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(255,107,61,0.15) 0%, transparent 70%);
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(2%, 2%) rotate(1deg); }
+      66% { transform: translate(-2%, 1%) rotate(-1deg); }
+    }
+
+    .grid-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
       pointer-events: none;
+      z-index: 0;
     }
-    .hero-content { position: relative; z-index: 1; width: 100%; padding: 60px 0; }
-    .greeting {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      color: var(--accent);
-      margin-bottom: 16px;
-      padding: 8px 16px;
-      background: rgba(255,107,61,0.1);
-      border-radius: 24px;
-      border: 1px solid rgba(255,107,61,0.2);
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+    a { color: var(--accent-cyan); text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    a:hover { color: var(--text-primary); text-shadow: 0 0 20px var(--accent-cyan); }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .name {
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 20px;
-      background: var(--gradient);
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      background: var(--gradient-main);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .tagline {
-      font-size: clamp(1.1rem, 3vw, 1.4rem);
-      color: var(--text);
-      font-weight: 600;
-      margin-bottom: 24px;
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      position: relative;
     }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gradient-main);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--text-primary); text-shadow: none; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 80px;
+    }
+    .hero-content { width: 100%; padding: 60px 0; }
+
+    .greeting {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      margin-bottom: 24px;
+      padding: 10px 20px;
+      background: rgba(0, 212, 255, 0.08);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 50px;
+      animation: fadeInUp 0.6s ease;
+    }
+    .greeting::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .name {
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 16px;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .tagline {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      animation: fadeInUp 0.6s ease 0.2s both;
+    }
+    .tagline span { color: var(--accent-purple); }
+
     .intro {
       font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 600px;
+      color: var(--text-secondary);
+      max-width: 640px;
       margin-bottom: 40px;
+      animation: fadeInUp 0.6s ease 0.3s both;
     }
+    .intro strong { color: var(--text-primary); font-weight: 600; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .social-links {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease 0.4s both;
     }
     .social-link {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 20px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      gap: 10px;
+      padding: 14px 22px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
       font-weight: 500;
-      color: var(--text);
-      transition: all 0.2s;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .social-link::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-main);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
     .social-link:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-      color: var(--text);
+      border-color: transparent;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+      color: var(--text-primary);
+      text-shadow: none;
     }
-    .social-link svg { width: 20px; height: 20px; }
+    .social-link:hover::before { opacity: 0.1; }
+    .social-link svg { width: 20px; height: 20px; position: relative; z-index: 1; }
+    .social-link span { position: relative; z-index: 1; }
 
-    /* Skills Tags */
     .skills {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 32px;
+      gap: 12px;
+      animation: fadeInUp 0.6s ease 0.5s both;
     }
     .skill-tag {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.8rem;
-      padding: 8px 16px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text-muted);
+      padding: 10px 18px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+    }
+    .skill-tag:hover {
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+      transform: translateY(-2px);
     }
 
-    /* Section Styles */
-    section { padding: 80px 0; }
+    section { padding: 100px 0; }
+    .section-header {
+      margin-bottom: 60px;
+      text-align: center;
+    }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+    }
     .section-title {
-      font-size: 2rem;
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
-      margin-bottom: 40px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    /* About Section */
-    .about-content {
+    .about-grid {
       display: grid;
+      grid-template-columns: 1fr;
       gap: 32px;
     }
-    .about-text { color: var(--text-muted); font-size: 1.05rem; }
-    .about-text p { margin-bottom: 20px; }
-    .about-text strong { color: var(--text); }
+    .about-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-main);
+    }
+    .about-text { color: var(--text-secondary); font-size: 1.05rem; }
+    .about-text p { margin-bottom: 24px; }
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--text-primary); font-weight: 600; }
 
-    /* Projects */
     .projects-grid {
       display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 24px;
     }
     .project-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      transition: all 0.3s;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-card);
+      opacity: 0;
+      transition: opacity 0.4s ease;
     }
     .project-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-glow);
     }
-    .project-header {
+    .project-card:hover::before { opacity: 1; }
+
+    .project-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: var(--gradient-main);
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
+    .project-icon svg { width: 24px; height: 24px; color: white; }
+
     .project-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .project-link {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      padding: 6px 12px;
-      background: rgba(255,107,61,0.1);
-      border-radius: 6px;
-      color: var(--accent);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
     }
     .project-desc {
-      color: var(--text-muted);
-      margin-bottom: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      flex-grow: 1;
+      position: relative;
+      z-index: 1;
     }
     .project-tech {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
     .tech-tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      background: var(--bg);
-      border-radius: 4px;
-      color: var(--accent);
+      font-size: 0.7rem;
+      padding: 6px 12px;
+      background: rgba(0, 212, 255, 0.1);
+      border-radius: 50px;
+      color: var(--accent-cyan);
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      color: var(--accent-cyan);
+      position: relative;
+      z-index: 1;
+    }
+    .project-link svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover .project-link svg {
+      transform: translateX(4px);
     }
 
-    /* Quote */
     .quote-section {
-      background: var(--bg-card);
-      border-left: 4px solid var(--accent);
-      padding: 32px;
-      margin: 60px 0;
-      border-radius: 0 16px 16px 0;
+      position: relative;
+      padding: 80px 0;
+    }
+    .quote-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-card::before {
+      content: '"';
+      position: absolute;
+      top: 20px;
+      left: 40px;
+      font-size: 120px;
+      font-weight: 700;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0.2;
+      line-height: 1;
     }
     .quote-text {
-      font-size: 1.3rem;
-      font-style: italic;
-      color: var(--text);
-      margin-bottom: 12px;
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
     }
     .quote-author {
-      color: var(--text-muted);
+      font-size: 1rem;
+      color: var(--accent-cyan);
       font-weight: 500;
     }
 
-    /* Footer */
     footer {
-      text-align: center;
-      padding: 48px 0;
-      border-top: 1px solid var(--border);
-      color: var(--text-muted);
+      padding: 60px 0;
+      border-top: 1px solid var(--border-subtle);
     }
-    footer p { margin-bottom: 16px; }
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+    .footer-brand {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
     .footer-links {
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
-      gap: 24px;
+      justify-content: center;
+      gap: 32px;
     }
-    .footer-links a { color: var(--text-muted); }
-    .footer-links a:hover { color: var(--accent); }
+    .footer-links a {
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    .footer-links a:hover { color: var(--accent-cyan); text-shadow: none; }
+    .footer-copy {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
 
-    /* Responsive */
-    @media (max-width: 640px) {
-      .hero { min-height: auto; padding: 80px 0; }
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+      nav { padding: 16px 0; }
+      .nav-links { display: none; }
+      .hero { padding-top: 100px; }
       section { padding: 60px 0; }
-      .social-links { gap: 8px; }
-      .social-link { padding: 10px 16px; font-size: 0.9rem; }
+      .about-card { padding: 28px; }
+      .project-card { padding: 24px; }
+      .quote-card { padding: 40px 24px; }
+      .quote-card::before { display: none; }
+      .social-link { padding: 12px 16px; font-size: 0.9rem; }
     }
+
+    @media (max-width: 480px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      .social-links { gap: 8px; }
+      .skill-tag { padding: 8px 14px; font-size: 0.75rem; }
+    }
+
+    /* Cursor Trail */
+    .cursor-trail {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gradient-main);
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .cursor-trail.active { opacity: 0.6; }
   </style>
 </head>
 <body>
+  <div class="bg-gradient"></div>
+  <div class="grid-pattern"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container nav-content">
+      <a href="#" class="nav-logo">KM</a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="mailto:kushalmeghani108@gmail.com">Contact</a>
+      </div>
+    </div>
+  </nav>
+
   <!-- Hero -->
   <section class="hero">
     <div class="container">
       <div class="hero-content">
-        <span class="greeting">👋 Hello, I'm</span>
+        <span class="greeting">Hello, I'm</span>
         <h1 class="name">Kushal Meghani</h1>
-        <p class="tagline">Systems Programmer &amp; Rust Enthusiast</p>
+        <p class="tagline">Systems Programmer <span>&</span> Rust Enthusiast</p>
         <p class="intro">
           I specialize in <strong>low-level development</strong>, <strong>bare-metal programming</strong>, 
           <strong>OS development</strong>, and <strong>hardware security</strong>. I build memory-safe tools, 
@@ -268,27 +556,27 @@
         <div class="social-links">
           <a href="https://github.com/KushalMeghani1644" target="_blank" rel="noopener" class="social-link">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            GitHub
+            <span>GitHub</span>
           </a>
           <a href="https://gitlab.com/KushalMeghani1644" target="_blank" rel="noopener" class="social-link">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.65 14.39L12 22.13 1.35 14.39a.84.84 0 01-.3-.94l1.22-3.78 2.44-7.51A.42.42 0 014.82 2a.43.43 0 01.58 0 .42.42 0 01.11.18l2.44 7.49h8.1l2.44-7.51A.42.42 0 0118.6 2a.43.43 0 01.58 0 .42.42 0 01.11.18l2.44 7.51L23 13.45a.84.84 0 01-.35.94z"/></svg>
-            GitLab
+            <span>GitLab</span>
           </a>
           <a href="mailto:kushalmeghani108@gmail.com" class="social-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            Email
+            <span>Email</span>
           </a>
           <a href="https://dev.to/kushalmeghani1644" target="_blank" rel="noopener" class="social-link">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.42 10.05c-.18-.16-.46-.23-.84-.23H6v4.36h.58c.37 0 .65-.08.84-.23.21-.17.31-.46.31-.93v-2.03c0-.47-.11-.78-.31-.94zm14.58-6.05h-20c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2v-12c0-1.1-.9-2-2-2zm-12.04 10.64h-1.29v-5.91h1.29v5.91zm5.39-1.54c0 .45-.11.79-.34 1.01-.23.22-.58.33-1.04.33h-2.37v-5.91h2.37c.46 0 .81.11 1.04.33.23.22.34.56.34 1.01v3.23zm4.63 1.54h-3.58v-5.91h3.58v1h-2.29v1.4h2.17v1h-2.17v1.51h2.29v1z"/></svg>
-            Dev.to
+            <span>Dev.to</span>
           </a>
           <a href="https://hashnode.com/@kushalmeghani" target="_blank" rel="noopener" class="social-link">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.351 8.019l-6.37-6.37a5.63 5.63 0 00-7.962 0l-6.37 6.37a5.63 5.63 0 000 7.962l6.37 6.37a5.63 5.63 0 007.962 0l6.37-6.37a5.63 5.63 0 000-7.962zM12 15.953a3.953 3.953 0 110-7.906 3.953 3.953 0 010 7.906z"/></svg>
-            Hashnode
+            <span>Hashnode</span>
           </a>
           <a href="https://leetcode.com/u/KushalMeghani1644/" target="_blank" rel="noopener" class="social-link">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.12 1.631l3.854 4.126 5.406 5.788a1.374 1.374 0 0 0 2.005-.065l.484-.517a1.374 1.374 0 0 0-.063-1.954l-5.407-5.788a3.3 3.3 0 0 1-.675-1.023 3.253 3.253 0 0 1-.2-.573 3.09 3.09 0 0 1-.036-1.322 2.938 2.938 0 0 1 .675-1.455l3.854-4.126a1.374 1.374 0 0 0 .063-1.954l-.484-.517a1.374 1.374 0 0 0-1.044-.438z"/></svg>
-            LeetCode
+            <span>LeetCode</span>
           </a>
         </div>
 
@@ -309,29 +597,30 @@
   <!-- About -->
   <section id="about">
     <div class="container">
-      <h2 class="section-title">About Me</h2>
-      <div class="about-content">
-        <div class="about-text">
-          <p>
-            I'm passionate about <strong>Rust</strong>, <strong>systems programming</strong>, and 
-            <strong>hardware security research</strong>. My expertise spans UEFI bootloaders, memory management, 
-            RowHammer detection, and bare-metal development.
-          </p>
-          <p>
-            As an advocate for <strong>memory safety</strong>, <strong>reliability</strong>, and 
-            <strong>low-level performance optimization</strong>, I focus on building practical, real-world systems tools.
-          </p>
-          <p>
-            I'm a <strong>Gentoo Linux</strong> user and OS tinkerer who has compiled an operating system from source. 
-            Currently mastering <strong>VIM</strong> and <strong>Neovim</strong>, and learning <strong>Zig</strong>.
-          </p>
-          <p>
-            I'm an active <strong>open-source contributor</strong>. I contribute to the 
-            <a href="https://github.com/rust-embedded/riscv" target="_blank">rust-embedded/riscv</a> project, 
-            helping improve Rust's embedded ecosystem for RISC-V architectures. I also contribute to 
-            <a href="https://github.com/tauri-apps/tauri" target="_blank">Tauri</a>, the Rust-based framework 
-            for building lightweight, secure desktop applications.
-          </p>
+      <div class="section-header">
+        <p class="section-label">Get to know me</p>
+        <h2 class="section-title">About Me</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-text">
+            <p>
+              I'm passionate about <strong>Rust</strong>, <strong>systems programming</strong>, and 
+              <strong>hardware security research</strong>. My expertise spans UEFI bootloaders, memory management, 
+              RowHammer detection, and bare-metal development.
+            </p>
+            <p>
+              I'm a <strong>Fedora Linux</strong> daily driver and <strong>Gentoo</strong> (in VM) tinkerer who has compiled an operating system from source. 
+              Currently mastering <strong>VIM</strong> and <strong>Neovim</strong>, and learning <strong>Zig</strong>.
+            </p>
+            <p>
+              I'm an active <strong>open-source contributor</strong>. I contribute to the 
+              <a href="https://github.com/rust-embedded/riscv" target="_blank">rust-embedded/riscv</a> project, 
+              helping improve Rust's embedded ecosystem for RISC-V architectures. I also contribute to 
+              <a href="https://github.com/tauri-apps/tauri" target="_blank">Tauri</a>, the Rust-based framework 
+              for building lightweight, secure desktop applications.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -340,72 +629,144 @@
   <!-- Projects -->
   <section id="projects">
     <div class="container">
-      <h2 class="section-title">Featured Projects</h2>
+      <div class="section-header">
+        <p class="section-label">My Work</p>
+        <h2 class="section-title">Featured Projects</h2>
+      </div>
       <div class="projects-grid">
         <a href="https://github.com/KushalMeghani1644/RustyBoot" target="_blank" rel="noopener" class="project-card">
-          <div class="project-header">
-            <h3 class="project-title">RustyBoot</h3>
-            <span class="project-link">View →</span>
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
           </div>
+          <h3 class="project-title">RustyBoot</h3>
           <p class="project-desc">A memory-safe, high-performance UEFI bootloader written in Rust with advanced boot features.</p>
           <div class="project-tech">
             <span class="tech-tag">Rust</span>
             <span class="tech-tag">UEFI</span>
             <span class="tech-tag">no_std</span>
           </div>
-        </a>
-
-        <a href="https://github.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener" class="project-card">
-          <div class="project-header">
-            <h3 class="project-title">RustyBoot-RISCV</h3>
-            <span class="project-link">View →</span>
-          </div>
-          <p class="project-desc">A minimalist RISC-V bootloader written in Rust, featuring UART support and ELF kernel loading capabilities.</p>
-          <div class="project-tech">
-            <span class="tech-tag">Rust</span>
-            <span class="tech-tag">RISC-V</span>
-            <span class="tech-tag">Bootloader</span>
-          </div>
+          <span class="project-link">
+            View Project
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
         </a>
 
         <a href="https://github.com/KushalMeghani1644/RustBerry-PI" target="_blank" rel="noopener" class="project-card">
-          <div class="project-header">
-            <h3 class="project-title">RustBerry-PI</h3>
-            <span class="project-link">View →</span>
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></svg>
           </div>
+          <h3 class="project-title">RustBerry-PI</h3>
           <p class="project-desc">A Raspberry Pi inspired virtual hardware board implementation in Rust for embedded systems experimentation.</p>
           <div class="project-tech">
             <span class="tech-tag">Rust</span>
             <span class="tech-tag">Embedded</span>
             <span class="tech-tag">Virtual HW</span>
           </div>
+          <span class="project-link">
+            View Project
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="https://github.com/KushalMeghani1644/RustyBoot-RISCV" target="_blank" rel="noopener" class="project-card">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg>
+          </div>
+          <h3 class="project-title">RustyBoot-RISCV</h3>
+          <p class="project-desc">A minimalist RISC-V bootloader written in Rust, featuring UART support and ELF kernel loading capabilities.</p>
+          <div class="project-tech">
+            <span class="tech-tag">Rust</span>
+            <span class="tech-tag">RISC-V</span>
+            <span class="tech-tag">Bootloader</span>
+          </div>
+          <span class="project-link">
+            View Project
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
         </a>
       </div>
     </div>
   </section>
 
   <!-- Quote -->
-  <div class="container">
-    <div class="quote-section">
-      <p class="quote-text">"I turn low-level complexity into reliable, safe, and efficient Rust solutions."</p>
-      <p class="quote-author">— Kushal Meghani</p>
+  <section class="quote-section">
+    <div class="container">
+      <div class="quote-card">
+        <p class="quote-text">"I turn low-level complexity into reliable, safe, and efficient Rust solutions."</p>
+        <p class="quote-author">— Kushal Meghani</p>
+      </div>
     </div>
-  </div>
+  </section>
 
   <!-- Footer -->
   <footer>
     <div class="container">
-      <p>🦀 Built with passion for systems programming</p>
-      <div class="footer-links">
-        <a href="https://github.com/KushalMeghani1644" target="_blank">GitHub</a>
-        <a href="https://gitlab.com/KushalMeghani1644" target="_blank">GitLab</a>
-        <a href="https://dev.to/kushalmeghani1644" target="_blank">Dev.to</a>
-        <a href="https://hashnode.com/@kushalmeghani" target="_blank">Hashnode</a>
-        <a href="https://leetcode.com/u/KushalMeghani1644/" target="_blank">LeetCode</a>
-        <a href="mailto:kushalmeghani108@gmail.com">Email</a>
+      <div class="footer-content">
+        <p class="footer-brand">🦀 Built with passion for systems programming</p>
+        <div class="footer-links">
+          <a href="https://github.com/KushalMeghani1644" target="_blank">GitHub</a>
+          <a href="https://gitlab.com/KushalMeghani1644" target="_blank">GitLab</a>
+          <a href="https://dev.to/kushalmeghani1644" target="_blank">Dev.to</a>
+          <a href="https://hashnode.com/@kushalmeghani" target="_blank">Hashnode</a>
+          <a href="https://leetcode.com/u/KushalMeghani1644/" target="_blank">LeetCode</a>
+          <a href="mailto:kushalmeghani108@gmail.com">Email</a>
+        </div>
+        <p class="footer-copy">© 2025 Kushal Meghani</p>
       </div>
-      <p style="margin-top: 24px; font-size: 0.9rem;">© 2025 Kushal Meghani</p>
     </div>
   </footer>
+
+  <!-- Cursor Trail Script -->
+  <script>
+    (function() {
+      const trailCount = 12;
+      const trails = [];
+      const positions = [];
+      
+      for (let i = 0; i < trailCount; i++) {
+        const trail = document.createElement('div');
+        trail.className = 'cursor-trail';
+        trail.style.transform = `scale(${1 - i * 0.06})`;
+        trail.style.opacity = `${0.5 - i * 0.04}`;
+        document.body.appendChild(trail);
+        trails.push(trail);
+        positions.push({ x: 0, y: 0 });
+      }
+
+      let mouseX = 0, mouseY = 0;
+      let isMoving = false;
+      let timeout;
+
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        isMoving = true;
+        trails.forEach(t => t.classList.add('active'));
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          isMoving = false;
+          trails.forEach(t => t.classList.remove('active'));
+        }, 150);
+      });
+
+      function animate() {
+        positions[0].x += (mouseX - positions[0].x) * 0.3;
+        positions[0].y += (mouseY - positions[0].y) * 0.3;
+        
+        for (let i = 1; i < trailCount; i++) {
+          positions[i].x += (positions[i-1].x - positions[i].x) * 0.25;
+          positions[i].y += (positions[i-1].y - positions[i].y) * 0.25;
+        }
+        
+        trails.forEach((trail, i) => {
+          trail.style.left = positions[i].x - 4 + 'px';
+          trail.style.top = positions[i].y - 4 + 'px';
+        });
+        
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+  </script>
 </body>
 </html>
