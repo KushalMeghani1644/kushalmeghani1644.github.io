@@ -1,6 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LayersIcon, CircuitIcon, CpuIcon, ArrowRightIcon } from "./icons";
+import { Button } from "@/components/ui/button";
+import { ArrowRightIcon, CircuitIcon, CpuIcon, LayersIcon } from "./icons";
 
 const projects = [
   {
@@ -31,20 +39,39 @@ const projects = [
 
 export function ProjectsSection() {
   return (
-    <section id="projects" className="py-20">
-      <div className="max-w-4xl mx-auto px-6">
-        {/* Section header */}
-        <div className="text-center mb-12 space-y-2">
-          <p className="font-mono text-xs text-primary tracking-widest uppercase">
-            My Work
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-            Featured Projects
-          </h2>
+    <section id="projects" className="relative py-20">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute right-[-220px] top-10 h-[440px] w-[440px] rounded-full bg-accent/10 blur-3xl" />
+      </div>
+
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="mb-10 flex items-end justify-between gap-6">
+          <div className="space-y-2">
+            <p className="font-mono text-xs tracking-widest text-primary uppercase">
+              My Work
+            </p>
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
+              Featured Projects
+            </h2>
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              A few focused builds around boot flows, embedded targets, and low-level Rust.
+            </p>
+          </div>
+
+          <div className="hidden sm:block">
+            <Button asChild variant="outline" size="sm">
+              <a
+                href="https://github.com/KushalMeghani1644"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                More on GitHub
+              </a>
+            </Button>
+          </div>
         </div>
 
-        {/* Projects grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
             <a
               key={project.title}
@@ -53,10 +80,15 @@ export function ProjectsSection() {
               rel="noopener noreferrer"
               className="group block"
             >
-              <Card className="h-full transition-all hover:ring-primary/50 hover:ring-2">
+              <Card className="h-full transition-all hover:ring-2 hover:ring-primary/40 hover:-translate-y-0.5">
                 <CardHeader>
-                  <div className="w-10 h-10 bg-primary/10 flex items-center justify-center mb-3">
-                    <project.icon className="w-5 h-5 text-primary" />
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className="flex size-10 items-center justify-center border border-border bg-background/50">
+                      <project.icon className="size-5 text-primary" />
+                    </div>
+                    <Badge variant="outline" className="font-mono text-[10px]">
+                      featured
+                    </Badge>
                   </div>
                   <CardTitle className="text-base">{project.title}</CardTitle>
                   <CardDescription>{project.description}</CardDescription>
@@ -70,15 +102,28 @@ export function ProjectsSection() {
                     ))}
                   </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="justify-between">
+                  <span className="text-xs text-muted-foreground">Case study</span>
                   <span className="flex items-center gap-1 text-xs text-primary font-medium">
-                    View Project
-                    <ArrowRightIcon className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                    View
+                    <ArrowRightIcon className="size-3 transition-transform group-hover:translate-x-1" />
                   </span>
                 </CardFooter>
               </Card>
             </a>
           ))}
+        </div>
+
+        <div className="mt-8 sm:hidden">
+          <Button asChild variant="outline" size="sm" className="w-full">
+            <a
+              href="https://github.com/KushalMeghani1644"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              More on GitHub
+            </a>
+          </Button>
         </div>
       </div>
     </section>

@@ -10,7 +10,17 @@ export default function Page() {
     <main className="min-h-screen bg-background">
       <Navigation />
       <HeroSection />
+
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="h-px w-full bg-border/60" />
+      </div>
+
       <AboutSection />
+
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="h-px w-full bg-border/60" />
+      </div>
+
       <ProjectsSection />
       <QuoteSection />
       <Footer />

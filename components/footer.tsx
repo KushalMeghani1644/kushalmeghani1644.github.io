@@ -1,6 +1,15 @@
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { GithubIcon, GitlabIcon, CodeIcon, HashIcon, TrophyIcon, MailIcon } from "./icons";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
+import {
+  CodeIcon,
+  GithubIcon,
+  GitlabIcon,
+  HashIcon,
+  MailIcon,
+  TrophyIcon,
+} from "./icons";
 
 const footerLinks = [
   {
@@ -37,44 +46,71 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="py-10 border-t border-border">
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="flex flex-col items-center gap-6">
-          {/* Brand */}
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <span>🦀</span>
-            Built with passion for systems programming
-          </p>
+    <footer className="border-t border-border/60 py-12">
+      <div className="mx-auto max-w-5xl px-6">
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle className="text-primary">Get in touch</CardTitle>
+          </CardHeader>
 
-          {/* Links */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {footerLinks.map((link) => (
-              <Button
-                key={link.name}
-                variant="ghost"
-                size="sm"
-                asChild
-              >
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2"
-                >
-                  <link.icon className="w-4 h-4" />
-                  <span className="text-xs">{link.name}</span>
-                </a>
-              </Button>
-            ))}
-          </div>
+          <CardContent className="pt-6">
+            <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Always happy to talk Rust, firmware, boot flows, and security research.
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Button asChild size="lg">
+                    <a href="mailto:kushalmeghani108@gmail.com">Email me</a>
+                  </Button>
+                  <Button asChild size="lg" variant="outline">
+                    <a
+                      href="https://github.com/KushalMeghani1644"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Follow on GitHub
+                    </a>
+                  </Button>
+                </div>
+              </div>
 
-          <Separator className="max-w-xs" />
+              <div>
+                <p className="mb-3 font-mono text-xs tracking-widest text-muted-foreground uppercase">
+                  Elsewhere
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {footerLinks.map((link) => (
+                    <Button
+                      key={link.name}
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="justify-start"
+                    >
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <link.icon className="size-4" />
+                        <span className="text-xs">{link.name}</span>
+                      </a>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-          {/* Copyright */}
-          <p className="text-xs text-muted-foreground">
-            © 2025 Kushal Meghani
-          </p>
-        </div>
+            <Separator className="my-8" />
+
+            <div className="flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
+              <span>© 2025 Kushal Meghani</span>
+              <span className="font-mono tracking-widest">built with next.js</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </footer>
   );

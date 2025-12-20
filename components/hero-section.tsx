@@ -1,6 +1,15 @@
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GithubIcon, GitlabIcon, MailIcon, CodeIcon, HashIcon, TrophyIcon } from "./icons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import {
+  CodeIcon,
+  GithubIcon,
+  GitlabIcon,
+  HashIcon,
+  MailIcon,
+  TrophyIcon,
+} from "./icons";
 
 const skills = [
   "Rust",
@@ -48,27 +57,33 @@ const socialLinks = [
 
 export function HeroSection() {
   return (
-    <section className="min-h-screen flex items-center pt-20">
-      <div className="max-w-4xl mx-auto px-6 py-16 w-full">
-        <div className="space-y-6">
-          {/* Greeting badge */}
-          <Badge variant="outline" className="text-primary border-primary/40">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse mr-2" />
-            Hello, I&apos;m
-          </Badge>
+    <section className="relative overflow-hidden pt-24">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-48 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -top-24 right-[-120px] h-[360px] w-[360px] rounded-full bg-accent/10 blur-3xl" />
+      </div>
 
-          {/* Name */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-[1fr_320px]">
+        <div className="relative space-y-7">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="border-primary/35 text-primary">
+              <span className="mr-2 size-2 rounded-full bg-primary animate-pulse" />
+              Hello, I&apos;m
+            </Badge>
+            <Badge variant="secondary" className="font-mono">
+              available for collaboration
+            </Badge>
+          </div>
+
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
             Kushal Meghani
           </h1>
 
-          {/* Tagline */}
-          <p className="text-xl sm:text-2xl font-medium text-muted-foreground">
+          <p className="text-xl font-medium text-muted-foreground sm:text-2xl">
             Systems Programmer <span className="text-primary">&amp;</span> Rust Enthusiast
           </p>
 
-          {/* Intro */}
-          <p className="text-base text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
             I specialize in <strong className="text-foreground">low-level development</strong>,{" "}
             <strong className="text-foreground">bare-metal programming</strong>,{" "}
             <strong className="text-foreground">OS development</strong>, and{" "}
@@ -77,36 +92,67 @@ export function HeroSection() {
             actively to open-source ecosystems.
           </p>
 
-          {/* Social links */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            {socialLinks.map((link) => (
-              <Button
-                key={link.name}
-                variant="outline"
-                size="sm"
-                asChild
-              >
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2"
-                >
-                  <link.icon className="w-4 h-4" />
-                  <span>{link.name}</span>
-                </a>
-              </Button>
-            ))}
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+            <Button asChild size="lg">
+              <a href="#projects">View Projects</a>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <a href="mailto:kushalmeghani108@gmail.com">Let&apos;s Talk</a>
+            </Button>
           </div>
 
-          {/* Skills */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            {skills.map((skill) => (
-              <Badge key={skill} variant="secondary" className="font-mono text-xs">
-                {skill}
-              </Badge>
-            ))}
+          <div className="pt-4">
+            <p className="mb-2 font-mono text-xs tracking-widest text-muted-foreground uppercase">
+              Stack & focus
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {skills.map((skill) => (
+                <Badge key={skill} variant="secondary" className="font-mono text-xs">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
           </div>
+        </div>
+
+        <div className="relative">
+          <Card className="sticky top-24">
+            <CardHeader className="border-b">
+              <CardTitle className="text-primary">Links</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <div className="grid grid-cols-2 gap-2">
+                {socialLinks.map((link) => (
+                  <Button
+                    key={link.name}
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="justify-start"
+                  >
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2"
+                    >
+                      <link.icon className="size-4" />
+                      <span>{link.name}</span>
+                    </a>
+                  </Button>
+                ))}
+              </div>
+
+              <div className="mt-4 rounded-none border border-border bg-background/60 p-3">
+                <p className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+                  Current interests
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  UEFI boot flows, RISC-V kernels, memory safety, fuzzing.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
