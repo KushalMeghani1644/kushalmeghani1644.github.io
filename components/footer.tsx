@@ -107,7 +107,7 @@ export function Footer() {
 
             <div className="flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
               <span>© 2025 Kushal Meghani</span>
-              <span className="font-mono tracking-widest">built with next.js</span>
+              <span className="font-mono tracking-widest">built with tanstack start</span>
             </div>
           </CardContent>
         </Card>
