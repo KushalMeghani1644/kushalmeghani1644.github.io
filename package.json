@@ -36,18 +36,6 @@
     "typescript-eslint": "^8",
     "vite-tsconfig-paths": "^5"
   },
-  "resolutions": {
-    "@tanstack/react-start-config": "1.115.0",
-    "@tanstack/router-generator": "1.115.0",
-    "@tanstack/router-plugin": "1.115.0",
-    "@tanstack/router-core": "1.115.0",
-    "@tanstack/server-functions-plugin": "1.115.0",
-    "@tanstack/react-start-plugin": "1.115.0",
-    "@tanstack/start-client-core": "1.115.0",
-    "@tanstack/start-server-core": "1.115.0",
-    "@tanstack/react-start-client": "1.115.0",
-    "@tanstack/react-start-server": "1.115.0"
-  },
   "overrides": {
     "@tanstack/react-start-config": "1.115.0",
     "@tanstack/router-generator": "1.115.0",

@@ -1,3 +1,5 @@
+import { twMerge } from "tailwind-merge"
+
 type ClassValue = string | undefined | null | false
 
 type VariantProps<T extends (...args: never[]) => string> = Parameters<T>[0]
@@ -41,7 +43,7 @@ function cva<V extends VariantsConfig>(
       classes.push(className)
     }
 
-    return classes.filter(Boolean).join(" ")
+    return twMerge(classes.filter(Boolean).join(" "))
   }
 }
 

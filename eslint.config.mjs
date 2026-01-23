@@ -14,6 +14,7 @@ export default tseslint.config(
       "build/**",
       "node_modules/**",
       "app.config.timestamp_*.js",
+      "**/*.gen.ts",
     ],
   }
 );
