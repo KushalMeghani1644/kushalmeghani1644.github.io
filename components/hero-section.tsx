@@ -1,7 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import {
   CodeIcon,
   GithubIcon,
@@ -9,7 +5,11 @@ import {
   HashIcon,
   MailIcon,
   TrophyIcon,
-} from "./icons";
+} from "./icons"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const skills = [
   "Rust",
@@ -20,7 +20,7 @@ const skills = [
   "OS Dev",
   "Memory Safety",
   "Hardware Security",
-];
+]
 
 const socialLinks = [
   {
@@ -53,7 +53,7 @@ const socialLinks = [
     href: "https://leetcode.com/u/KushalMeghani1644/",
     icon: TrophyIcon,
   },
-];
+]
 
 export function HeroSection() {
   return (
@@ -80,16 +80,18 @@ export function HeroSection() {
           </h1>
 
           <p className="text-xl font-medium text-muted-foreground sm:text-2xl">
-            Systems Programmer <span className="text-primary">&amp;</span> Rust Enthusiast
+            Systems Programmer <span className="text-primary">&amp;</span> Rust
+            Enthusiast
           </p>
 
           <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-            I specialize in <strong className="text-foreground">low-level development</strong>,{" "}
+            I specialize in{" "}
+            <strong className="text-foreground">low-level development</strong>,{" "}
             <strong className="text-foreground">bare-metal programming</strong>,{" "}
             <strong className="text-foreground">OS development</strong>, and{" "}
-            <strong className="text-foreground">hardware security</strong>. I build memory-safe
-            tools, UEFI bootloaders, and security research utilities, contributing
-            actively to open-source ecosystems.
+            <strong className="text-foreground">hardware security</strong>. I
+            build memory-safe tools, UEFI bootloaders, and security research
+            utilities, contributing actively to open-source ecosystems.
           </p>
 
           <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
@@ -107,7 +109,11 @@ export function HeroSection() {
             </p>
             <div className="flex flex-wrap gap-2">
               {skills.map((skill) => (
-                <Badge key={skill} variant="secondary" className="font-mono text-xs">
+                <Badge
+                  key={skill}
+                  variant="secondary"
+                  className="font-mono text-xs"
+                >
                   {skill}
                 </Badge>
               ))}
@@ -156,5 +162,5 @@ export function HeroSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

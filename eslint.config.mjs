@@ -1,9 +1,7 @@
-import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
+import { tanstackConfig } from "@tanstack/eslint-config"
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+export default [
+  ...tanstackConfig,
   {
     ignores: [
       ".next/**",
@@ -16,5 +14,5 @@ export default tseslint.config(
       "app.config.timestamp_*.js",
       "**/*.gen.ts",
     ],
-  }
-);
+  },
+]

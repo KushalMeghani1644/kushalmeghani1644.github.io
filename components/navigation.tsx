@@ -1,20 +1,21 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { MenuIcon } from "./icons"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { MenuIcon } from "./icons";
+} from "@/components/ui/dropdown-menu"
 
 const navItems = [
   { label: "About", href: "#about" },
   { label: "Projects", href: "#projects" },
-];
+]
 
 export function Navigation() {
   return (
@@ -72,5 +73,5 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  );
+  )
 }

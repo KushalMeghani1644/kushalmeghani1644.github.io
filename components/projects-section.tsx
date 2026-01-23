@@ -1,3 +1,7 @@
+import { ArrowRightIcon, CircuitIcon, CpuIcon, LayersIcon } from "./icons"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -5,10 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowRightIcon, CircuitIcon, CpuIcon, LayersIcon } from "./icons";
+} from "@/components/ui/card"
 
 const projects = [
   {
@@ -35,7 +36,7 @@ const projects = [
     href: "https://github.com/KushalMeghani1644/RustyBoot-RISCV",
     icon: CpuIcon,
   },
-];
+]
 
 export function ProjectsSection() {
   return (
@@ -54,7 +55,8 @@ export function ProjectsSection() {
               Featured Projects
             </h2>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              A few focused builds around boot flows, embedded targets, and low-level Rust.
+              A few focused builds around boot flows, embedded targets, and
+              low-level Rust.
             </p>
           </div>
 
@@ -96,14 +98,20 @@ export function ProjectsSection() {
                 <CardContent>
                   <div className="flex flex-wrap gap-1">
                     {project.tech.map((tech) => (
-                      <Badge key={tech} variant="secondary" className="font-mono text-[10px]">
+                      <Badge
+                        key={tech}
+                        variant="secondary"
+                        className="font-mono text-[10px]"
+                      >
                         {tech}
                       </Badge>
                     ))}
                   </div>
                 </CardContent>
                 <CardFooter className="justify-between">
-                  <span className="text-xs text-muted-foreground">Case study</span>
+                  <span className="text-xs text-muted-foreground">
+                    Case study
+                  </span>
                   <span className="flex items-center gap-1 text-xs text-primary font-medium">
                     View
                     <ArrowRightIcon className="size-3 transition-transform group-hover:translate-x-1" />
@@ -127,5 +135,5 @@ export function ProjectsSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

@@ -1,49 +1,57 @@
 import { twMerge } from "tailwind-merge"
 
-type ClassValue = string | undefined | null | false
+import type { ClassValue } from "./utils"
 
-type VariantProps<T extends (...args: never[]) => string> = Parameters<T>[0]
+type VariantProps<TFunc extends (...args: Array<never>) => string> =
+  Parameters<TFunc>[0]
 
 type VariantsConfig = Record<string, Record<string, string>>
 
-type VariantOptions<V extends VariantsConfig> = {
-  [K in keyof V]?: keyof V[K]
+type VariantOptions<TVariants extends VariantsConfig> = {
+  [K in keyof TVariants]?: keyof TVariants[K]
 }
 
-type CVAConfig<V extends VariantsConfig> = {
-  variants?: V
-  defaultVariants?: VariantOptions<V>
+type CVAConfig<TVariants extends VariantsConfig> = {
+  variants?: TVariants
+  defaultVariants?: VariantOptions<TVariants>
 }
 
-function cva<V extends VariantsConfig>(
+function cva<TVariants extends VariantsConfig>(
   base: string,
-  config?: CVAConfig<V>
+  config?: CVAConfig<TVariants>,
 ) {
-  return (props?: VariantOptions<V> & { className?: ClassValue }): string => {
+  return (
+    props?: VariantOptions<TVariants> & { className?: ClassValue },
+  ): string => {
     const { className, ...variantProps } = props || {}
-    const classes: string[] = [base]
+    const classes: Array<string> = [base]
 
     if (config?.variants) {
       const variants = config.variants
-      const variantKeys = Object.keys(variants) as (keyof V)[]
+      const variantKeys = Object.keys(variants) as Array<keyof TVariants>
 
       for (const variantKey of variantKeys) {
         const variantValues = variants[variantKey]
         const selectedVariant =
-          (variantProps as Record<string, string | undefined>)[variantKey as string] ??
-          config.defaultVariants?.[variantKey]
+          (variantProps as Record<string, string | undefined>)[
+            variantKey as string
+          ] ?? config.defaultVariants?.[variantKey]
 
-        if (selectedVariant && typeof selectedVariant === 'string' && variantValues[selectedVariant]) {
+        if (
+          selectedVariant &&
+          typeof selectedVariant === "string" &&
+          variantValues[selectedVariant]
+        ) {
           classes.push(variantValues[selectedVariant])
         }
       }
     }
 
-    if (className) {
+    if (className && typeof className === "string") {
       classes.push(className)
     }
 
-    return twMerge(classes.filter(Boolean).join(" "))
+    return twMerge(classes.join(" "))
   }
 }
 

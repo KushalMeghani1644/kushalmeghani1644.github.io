@@ -1,10 +1,16 @@
 import { twMerge } from "tailwind-merge"
 
-type ClassValue = string | number | boolean | undefined | null | ClassValue[]
+export type ClassValue =
+  | string
+  | number
+  | boolean
+  | undefined
+  | null
+  | Array<ClassValue>
 
-export function cn(...inputs: ClassValue[]): string {
-  const flatten = (arr: ClassValue[]): string[] => {
-    const result: string[] = []
+export function cn(...inputs: Array<ClassValue>): string {
+  const flatten = (arr: Array<ClassValue>): Array<string> => {
+    const result: Array<string> = []
     for (const item of arr) {
       if (Array.isArray(item)) {
         result.push(...flatten(item))

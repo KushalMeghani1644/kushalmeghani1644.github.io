@@ -15,10 +15,12 @@
 /.next/
 /out/
 
-# vinxi / tanstack start
+# vinxi / tanstack start / vite
 /.vinxi/
 /.output/
+/dist/
 app.config.timestamp_*.js
+vite.config.timestamp_*.js
 
 # production
 /build

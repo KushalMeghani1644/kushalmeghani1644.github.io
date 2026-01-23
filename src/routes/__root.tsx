@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import {
   HeadContent,
   Outlet,
@@ -6,7 +7,8 @@ import {
 } from "@tanstack/react-router";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import appCss from "../styles/globals.css?url";
+import type { ReactNode } from "react";
+import appCss from "~/styles/globals.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -29,17 +31,17 @@ export const Route = createRootRoute({
       { rel: "stylesheet", href: appCss },
     ],
   }),
-  component: RootComponent,
+  shellComponent: RootDocument,
 });
 
-function RootComponent() {
+function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
       <body className="antialiased min-h-screen">
-        <Outlet />
+        {children}
         <Analytics />
         <SpeedInsights />
         <Scripts />
