@@ -1,5 +1,4 @@
-import type { ClassValue } from "./utils"
-import { cn } from "./utils"
+import { cn, type ClassValue } from "./utils"
 
 type VariantProps<TFunc extends (...args: Array<never>) => string> =
   Parameters<TFunc>[0]
