@@ -1,6 +1,5 @@
-import { twMerge } from "tailwind-merge"
-
 import type { ClassValue } from "./utils"
+import { cn } from "./utils"
 
 type VariantProps<TFunc extends (...args: Array<never>) => string> =
   Parameters<TFunc>[0]
@@ -47,11 +46,7 @@ function cva<TVariants extends VariantsConfig>(
       }
     }
 
-    if (className && typeof className === "string") {
-      classes.push(className)
-    }
-
-    return twMerge(classes.join(" "))
+    return cn(classes.join(" "), className)
   }
 }
 
