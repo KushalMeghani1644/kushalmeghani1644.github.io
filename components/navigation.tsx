@@ -1,5 +1,3 @@
-"use client"
-
 import { MenuIcon } from "./icons"
 
 import { Badge } from "@/components/ui/badge"
