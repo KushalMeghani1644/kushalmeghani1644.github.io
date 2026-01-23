@@ -1,7 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-
 import {
   CodeIcon,
   GithubIcon,
@@ -9,7 +5,11 @@ import {
   HashIcon,
   MailIcon,
   TrophyIcon,
-} from "./icons";
+} from "./icons"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
 const footerLinks = [
   {
@@ -42,7 +42,7 @@ const footerLinks = [
     href: "mailto:kushalmeghani108@gmail.com",
     icon: MailIcon,
   },
-];
+]
 
 export function Footer() {
   return (
@@ -57,7 +57,8 @@ export function Footer() {
             <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Always happy to talk Rust, firmware, boot flows, and security research.
+                  Always happy to talk Rust, firmware, boot flows, and security
+                  research.
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <Button asChild size="lg">
@@ -107,11 +108,13 @@ export function Footer() {
 
             <div className="flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
               <span>© 2025 Kushal Meghani</span>
-              <span className="font-mono tracking-widest">built with next.js</span>
+              <span className="font-mono tracking-widest">
+                Built with TanStack Start
+              </span>
             </div>
           </CardContent>
         </Card>
       </div>
     </footer>
-  );
+  )
 }

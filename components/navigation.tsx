@@ -1,45 +1,42 @@
-"use client";
+import { MenuIcon } from "./icons"
 
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { MenuIcon } from "./icons";
+} from "@/components/ui/dropdown-menu"
 
 const navItems = [
   { label: "About", href: "#about" },
   { label: "Projects", href: "#projects" },
-];
+]
 
 export function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
-        <Link href="#" className="flex items-center gap-2">
+        <a href="#" className="flex items-center gap-2">
           <span className="inline-flex size-9 items-center justify-center border border-border bg-card font-mono text-xs font-semibold tracking-wider text-primary">
             KM
           </span>
           <span className="hidden sm:block text-xs font-medium text-muted-foreground">
             systems programmer
           </span>
-        </Link>
+        </a>
 
         <div className="hidden md:flex items-center gap-2">
           {navItems.map((item) => (
             <Button key={item.href} variant="ghost" size="sm" asChild>
-              <Link
+              <a
                 href={item.href}
                 className="text-muted-foreground hover:text-foreground"
               >
                 {item.label}
-              </Link>
+              </a>
             </Button>
           ))}
 
@@ -62,7 +59,7 @@ export function Navigation() {
             <DropdownMenuContent align="end" className="w-44">
               {navItems.map((item) => (
                 <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href}>{item.label}</Link>
+                  <a href={item.href}>{item.label}</a>
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
@@ -74,5 +71,5 @@ export function Navigation() {
         </div>
       </div>
     </nav>
-  );
+  )
 }
