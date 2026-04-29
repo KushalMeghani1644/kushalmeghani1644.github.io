@@ -3,27 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const highlights = [
   { label: "Daily driver", value: "Fedora" },
-  { label: "Tinkering", value: "Gentoo (VM)" },
   { label: "Editor", value: "Vim / Neovim" },
-  { label: "Learning", value: "Zig" },
 ];
 
 export function AboutSection() {
   return (
-    <section id="about" className="relative py-20">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-180px] top-16 h-[360px] w-[360px] rounded-full bg-primary/8 blur-3xl" />
-      </div>
-
-      <div className="mx-auto max-w-5xl px-6">
+    <section id="about" className="py-16">
+      <div className="mx-auto max-w-4xl px-6">
         <div className="mb-10 flex flex-col items-start gap-2">
-          <p className="font-mono text-xs tracking-widest text-primary uppercase">
-            Get to know me
-          </p>
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
             About Me
           </h2>
-          <p className="max-w-2xl text-sm text-muted-foreground">
+          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
             I care about reliability, performance, and clean low-level abstractions.
           </p>
         </div>
@@ -43,18 +34,15 @@ export function AboutSection() {
                 detection, and bare-metal development.
               </p>
               <p>
-                I&apos;m a{" "}
-                <strong className="text-foreground">Fedora Linux</strong> daily driver
-                and <strong className="text-foreground">Gentoo</strong> (in VM)
-                tinkerer who has compiled an operating system from source. Currently
-                mastering <strong className="text-foreground">VIM</strong> and{" "}
-                <strong className="text-foreground">Neovim</strong>, and learning{" "}
-                <strong className="text-foreground">Zig</strong>.
+                I&apos;m a <strong className="text-foreground">Fedora Linux</strong> daily
+                driver who has compiled an operating system from source.
+                Currently mastering <strong className="text-foreground">VIM</strong>
+                and <strong className="text-foreground">Neovim</strong>.
               </p>
               <p>
                 I&apos;m an active{" "}
                 <strong className="text-foreground">open-source contributor</strong>. I
-                contribute to the{" "}
+                contribute to projects like{" "}
                 <a
                   href="https://github.com/rust-embedded/riscv"
                   target="_blank"
@@ -63,8 +51,7 @@ export function AboutSection() {
                 >
                   rust-embedded/riscv
                 </a>{" "}
-                project, helping improve Rust&apos;s embedded ecosystem for RISC-V
-                architectures. I also contribute to{" "}
+                and{" "}
                 <a
                   href="https://github.com/tauri-apps/tauri"
                   target="_blank"
@@ -73,8 +60,8 @@ export function AboutSection() {
                 >
                   Tauri
                 </a>
-                , the Rust-based framework for building lightweight, secure desktop
-                applications.
+                , helping improve Rust tooling and systems-focused developer
+                experiences.
               </p>
             </CardContent>
           </Card>

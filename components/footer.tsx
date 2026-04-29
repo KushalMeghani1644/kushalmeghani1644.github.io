@@ -5,6 +5,7 @@ import {
   HashIcon,
   MailIcon,
   TrophyIcon,
+  XIcon,
 } from "./icons"
 
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
 const footerLinks = [
+  {
+    name: "X",
+    href: "https://x.com/Kushal1644",
+    icon: XIcon,
+  },
   {
     name: "GitHub",
     href: "https://github.com/KushalMeghani1644",
@@ -46,8 +52,8 @@ const footerLinks = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/60 py-12">
-      <div className="mx-auto max-w-5xl px-6">
+    <footer className="border-t border-border/60 py-10">
+      <div className="mx-auto max-w-4xl px-6">
         <Card>
           <CardHeader className="border-b">
             <CardTitle className="text-primary">Get in touch</CardTitle>

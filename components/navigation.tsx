@@ -1,6 +1,5 @@
 import { MenuIcon } from "./icons"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,7 +11,6 @@ import {
 
 const navItems = [
   { label: "About", href: "#about" },
-  { label: "Projects", href: "#projects" },
 ]
 
 export function Navigation() {
@@ -39,10 +37,6 @@ export function Navigation() {
               </a>
             </Button>
           ))}
-
-          <Badge variant="outline" className="border-primary/30 text-primary">
-            open-source
-          </Badge>
 
           <Button asChild size="sm" className="ml-2">
             <a href="mailto:kushalmeghani108@gmail.com">Contact</a>
