@@ -6,10 +6,10 @@ import {
   MailIcon,
   TrophyIcon,
   XIcon,
-} from "./icons"
+} from "./icons";
 
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const footerLinks = [
   {
@@ -47,7 +47,7 @@ const footerLinks = [
     href: "mailto:kushalmeghani108@gmail.com",
     icon: MailIcon,
   },
-]
+];
 
 export function Footer() {
   return (
@@ -107,12 +107,12 @@ export function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
-          <span>© 2025 Kushal Meghani</span>
+          <span>© 2026 Kushal Meghani</span>
           <span className="font-mono tracking-widest">
             Built with TanStack Start
           </span>
         </div>
       </div>
     </footer>
-  )
+  );
 }
