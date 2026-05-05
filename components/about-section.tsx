@@ -1,102 +1,66 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const highlights = [
-  { label: "Daily driver", value: "Fedora" },
-  { label: "Editor", value: "Vim / Neovim" },
+const mainFocus = [
+  {
+    title: "Bare metal",
+    description: "I love understanding how computers work under the hood.",
+  },
+  {
+    title: "Rust",
+    description: "My primary language in which I can code well.",
+  },
+  {
+    title: "Linux",
+    description: "I like having control of my OS and do fun experiments on Linux.",
+  },
+  {
+    title: "AI",
+    description: "I am an AI nerd learning how it works under the hood!",
+  },
+];
+
+const stack = [
+  "Rust",
+  "QEMU",
+  "Linux (Fedora)",
+  "TypeScript",
+  "Bun",
+  "Vercel",
+  "AI",
 ];
 
 export function AboutSection() {
   return (
-    <section id="about" className="py-16">
+    <section id="main-focus" className="py-16">
       <div className="mx-auto max-w-4xl px-6">
-        <div className="mb-10 flex flex-col items-start gap-2">
+        <div>
           <h2 className="text-3xl font-bold text-foreground sm:text-4xl">
-            About Me
+            My Main Focus
           </h2>
-          <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
-            I care about reliability, performance, and clean low-level abstractions.
-          </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-          <Card className="h-full">
-            <CardHeader className="border-b border-border/70">
-              <CardTitle className="text-primary">Background</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p>
-                I&apos;m passionate about{" "}
-                <strong className="text-foreground">Rust</strong>,{" "}
-                <strong className="text-foreground">systems programming</strong>, and{" "}
-                <strong className="text-foreground">hardware security research</strong>.
-                My expertise spans UEFI bootloaders, memory management, RowHammer
-                detection, and bare-metal development.
+        <div className="mt-8 space-y-5">
+          {mainFocus.map((item) => (
+            <div key={item.title} className="space-y-2">
+              <p className="font-mono text-[10px] tracking-widest text-primary uppercase">
+                {item.title}
               </p>
-              <p>
-                I&apos;m a <strong className="text-foreground">Fedora Linux</strong> daily
-                driver who has compiled an operating system from source.
-                Currently mastering <strong className="text-foreground">VIM</strong>
-                and <strong className="text-foreground">Neovim</strong>.
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {item.description}
               </p>
-              <p>
-                I&apos;m an active{" "}
-                <strong className="text-foreground">open-source contributor</strong>. I
-                contribute to projects like{" "}
-                <a
-                  href="https://github.com/rust-embedded/riscv"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline underline-offset-4"
-                >
-                  rust-embedded/riscv
-                </a>{" "}
-                and{" "}
-                <a
-                  href="https://github.com/tauri-apps/tauri"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline underline-offset-4"
-                >
-                  Tauri
-                </a>
-                , helping improve Rust tooling and systems-focused developer
-                experiences.
-              </p>
-            </CardContent>
-          </Card>
+            </div>
+          ))}
+        </div>
 
-          <Card className="h-full">
-            <CardHeader className="border-b border-border/70">
-              <CardTitle className="text-primary">Snapshot</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid gap-3">
-                {highlights.map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center justify-between gap-3 border border-border bg-background/40 px-3 py-2"
-                  >
-                    <span className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-                      {item.label}
-                    </span>
-                    <Badge variant="secondary" className="font-mono text-xs">
-                      {item.value}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 border border-border bg-background/40 p-3">
-                <p className="font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-                  What I build
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Memory-safe tools, firmware/boot pieces, and security research utilities.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="mt-10 border-t border-border/60 pt-6">
+          <h3 className="text-sm font-medium text-primary">My Stack</h3>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {stack.map((item) => (
+              <Badge key={item} variant="secondary" className="font-mono text-xs">
+                {item}
+              </Badge>
+            ))}
+          </div>
         </div>
       </div>
     </section>

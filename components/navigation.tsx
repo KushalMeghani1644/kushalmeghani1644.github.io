@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const navItems = [
-  { label: "About", href: "#about" },
+  { label: "Main Focus", href: "#main-focus" },
 ]
 
 export function Navigation() {
@@ -18,9 +18,11 @@ export function Navigation() {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
         <a href="#" className="flex items-center gap-2">
-          <span className="inline-flex size-9 items-center justify-center border border-border bg-card font-mono text-xs font-semibold tracking-wider text-primary">
-            KM
-          </span>
+          <img
+            src="/drawing.svg"
+            alt="Kushal Meghani logo"
+            className="size-9"
+          />
           <span className="hidden sm:block text-xs font-medium text-muted-foreground">
             systems programmer
           </span>

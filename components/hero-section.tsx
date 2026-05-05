@@ -43,9 +43,10 @@ export function HeroSection() {
           </p>
 
           <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">
-            I work on low-level development, bare-metal systems, OS internals,
-            and hardware security. I build memory-safe tools, UEFI bootloaders,
-            and practical research utilities in Rust.
+            I love coding in Rust, and making bare-metal projects! I am an AI
+            nerd who loves deep-diving into modern tools. Along with that I am
+            also a Linux nerd always experimenting with new tools and am still
+            learning deep Linux internals.
           </p>
 
           <div className="pt-2">
