@@ -17,12 +17,11 @@ export const Route = createRootRoute({
       { title: "Kushal Meghani | Systems Programmer" },
       {
         name: "description",
-        content:
-          "Systems programmer & Rust enthusiast specializing in low-level development, bare-metal programming, OS development, and hardware security.",
+        content: "15 y/o I love building things using Rust, Go, and Ai agents",
       },
       { name: "robots", content: "index, follow" },
       { name: "author", content: "Kushal Meghani" },
-      { name: "theme-color", content: "#1a1612" },
+      { name: "theme-color", content: "#000000" },
     ],
     links: [
       { rel: "icon", href: "/favicon.ico" },
@@ -39,7 +38,8 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="antialiased min-h-screen">
+      {/* Removed overflow-hidden to enable normal scrolling */}
+      <body className="antialiased min-h-screen bg-black">
         {children}
         <Analytics />
         <SpeedInsights />
