@@ -39,7 +39,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       {/* Removed overflow-hidden to enable normal scrolling */}
-      <body className="antialiased min-h-screen bg-black">
+      <body className="antialiased min-h-screen bg-black selection:bg-white/20 selection:text-white">
         {children}
         <Analytics />
         <SpeedInsights />

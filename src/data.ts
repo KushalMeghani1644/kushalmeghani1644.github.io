@@ -7,5 +7,12 @@ export const DATA = {
     { name: "GitLab", href: "https://gitlab.com/KushalMeghani1644" },
     { name: "Email", href: "mailto:kushalmeghani108@gmail.com" },
     { name: "Dev.to", href: "https://dev.to/kushalmeghani1644" },
+  ],
+  projects: [
+    {
+      name: "GoAudit",
+      description: "A CLI tool for auditing your dependencies.",
+      href: "https://github.com/KushalMeghani1644/GoAudit"
+    }
   ]
 };
