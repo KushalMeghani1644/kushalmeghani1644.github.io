@@ -26,6 +26,7 @@ export const Route = createRootRoute({
     links: [
       { rel: "icon", href: "/favicon.ico" },
       { rel: "canonical", href: "https://kushalmeghani.dev" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=VT323&display=swap" },
       { rel: "stylesheet", href: appCss },
     ],
   }),
@@ -34,7 +35,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <HeadContent />
       </head>
