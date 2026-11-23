@@ -4,8 +4,15 @@ import viteReact from "@vitejs/plugin-react"
 import { nitro } from "nitro/vite"
 import { defineConfig } from "vite"
 import tsConfigPaths from "vite-tsconfig-paths"
+import { fileURLToPath } from "node:url"
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      // Keep "@/..." imports working in Vite as well as TypeScript.
+      "@/": fileURLToPath(new URL("./", import.meta.url)),
+    },
+  },
   server: {
     port: 3000,
   },

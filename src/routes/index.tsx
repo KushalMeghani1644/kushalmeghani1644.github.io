@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DATA } from "../data";
+import { DitherLandscape } from "@/components/dithercn/dither-landscape";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -44,18 +45,27 @@ function Home() {
         </ul>
       </nav>
 
-      <div className="min-h-screen bg-black text-white flex justify-center p-6 pt-24 md:pt-32 font-mono">
-        <div className="w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20">
+      <div className="relative min-h-screen bg-black text-white flex justify-center p-6 pt-24 md:pt-32 font-mono">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[340px] overflow-hidden"
+        >
+          <DitherLandscape className="absolute inset-0" />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black via-black/70 to-transparent" />
+        </div>
+
+        <div className="relative z-10 w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20">
           
           <header className="flex flex-col gap-4">
           <h1 
             className="text-3xl font-normal tracking-wide flex items-end gap-3 leading-none"
-            style={{ fontFamily: "'VT323', monospace" }}
+            style={{ fontFamily: "'VT323', monospace", textShadow: "0 2px 18px rgba(0,0,0,0.9)" }}
           >
             <span>{displayedName}</span> <span className="text-[0.8em] mb-1">█</span>
           </h1>
           <div className="h-px bg-white/20 w-full" />
-          <p className="text-sm text-white/60 leading-relaxed text-left">
+          <p className="text-sm text-white/75 leading-relaxed text-left" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.95), 0 2px 16px rgba(0,0,0,0.9)" }}>
             {DATA.bio}
           </p>
         </header>
