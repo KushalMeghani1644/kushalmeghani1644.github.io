@@ -1,9 +1,9 @@
 import type { PixelBuffer } from "@/lib/dither/diffuse";
-import { getThresholdMap } from "@/lib/dither/matrices";
 import type { DitherMatrix } from "@/lib/dither/matrices";
+import type { DitherColor } from "@/lib/dither/tokens";
+import { getThresholdMap } from "@/lib/dither/matrices";
 import { ditherPath } from "@/lib/dither/pattern";
 import { cssColor } from "@/lib/dither/tokens";
-import type { DitherColor } from "@/lib/dither/tokens";
 
 /**
  * dither-export: turn a dither into files. PNG through a canvas, SVG with
@@ -98,8 +98,8 @@ interface Swatch {
  */
 const toCells = (
   source: PixelBuffer | IndexedBitmap,
-  palette: readonly DitherColor[] | undefined
-): { cells: Int32Array; swatches: Swatch[] } => {
+  palette: ReadonlyArray<DitherColor> | undefined
+): { cells: Int32Array; swatches: Array<Swatch> } => {
   const count = source.width * source.height;
   const cells = new Int32Array(count);
 
@@ -116,7 +116,7 @@ const toCells = (
   }
 
   const lookup = new Map<string, number>();
-  const swatches: Swatch[] = [];
+  const swatches: Array<Swatch> = [];
   const { data } = source;
   for (let index = 0; index < count; index += 1) {
     const offset = index * 4;
@@ -139,7 +139,7 @@ const toCells = (
 };
 
 /** The most used opaque colour, which becomes one background rectangle. */
-const mostUsed = (cells: Int32Array, swatches: readonly Swatch[]) => {
+const mostUsed = (cells: Int32Array, swatches: ReadonlyArray<Swatch>) => {
   const counts = new Uint32Array(swatches.length);
   for (const cell of cells) {
     if (cell >= 0) {
@@ -260,7 +260,7 @@ export interface SVGOptions {
    * SVG is inlined in a page, not in a standalone file. Ignored for pixels,
    * which carry their own colours.
    */
-  palette?: readonly DitherColor[];
+  palette?: ReadonlyArray<DitherColor>;
   /**
    * Paint the most used colour as one background rectangle instead of
    * cells. Keeps files small. Default `true`.
@@ -294,15 +294,15 @@ export const toSVG = (
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width * cell}" height="${height * cell}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">`,
   ];
-  const backdrop = swatches[fill];
+  const backdrop = swatches.at(fill);
   if (backdrop) {
     parts.push(
       `<rect width="${width}" height="${height}" fill="${backdrop.fill}"/>`
     );
   }
   for (let index = 0; index < swatches.length; index += 1) {
-    const swatch = swatches[index];
-    const path = paths[index];
+    const swatch = swatches.at(index);
+    const path = paths.at(index);
     if (!swatch || !path) {
       continue;
     }
@@ -379,7 +379,7 @@ interface ImageCSSOptions {
 
 export type CSSOptions = TileCSSOptions | ImageCSSOptions;
 
-const rule = (selector: string, declarations: readonly string[]) =>
+const rule = (selector: string, declarations: ReadonlyArray<string>) =>
   `${selector} {\n${declarations.map((line) => `  ${line};`).join("\n")}\n}\n`;
 
 /**

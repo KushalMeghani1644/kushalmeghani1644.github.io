@@ -12,9 +12,9 @@ const TOKEN =
  * GLSL without directives, split at the top level with comments dropped:
  * declarations ending in `;` and definitions ending in their `}`.
  */
-const topLevelChunks = (source: string): string[] => {
+const topLevelChunks = (source: string): Array<string> => {
   const code = source.replaceAll(COMMENTS, " ");
-  const chunks: string[] = [];
+  const chunks: Array<string> = [];
   let depth = 0;
   let start = 0;
   const cut = (end: number) => {

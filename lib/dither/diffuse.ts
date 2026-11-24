@@ -1,5 +1,5 @@
-import { getThresholdMap } from "@/lib/dither/matrices";
 import type { Rgba } from "@/lib/dither/tokens";
+import { getThresholdMap } from "@/lib/dither/matrices";
 
 /**
  * CPU dithering for still images. Pure functions over RGBA pixels: the
@@ -18,7 +18,7 @@ export const DITHER_METHODS = [
   "floyd-steinberg",
   "atkinson",
   "sierra-lite",
-] as const satisfies readonly DitherMethod[];
+] as const satisfies ReadonlyArray<DitherMethod>;
 
 /** An RGB colour, each channel in [0, 1]. Alpha in an `Rgba` is ignored. */
 export type PaletteColor = readonly [number, number, number] | Rgba;
@@ -27,7 +27,7 @@ export type PaletteColor = readonly [number, number, number] | Rgba;
 export type ImagePalette = readonly [
   PaletteColor,
   PaletteColor,
-  ...PaletteColor[],
+  ...Array<PaletteColor>,
 ];
 
 /** Anything shaped like `ImageData`: RGBA bytes, row by row. */
@@ -67,7 +67,7 @@ const BLACK_AND_WHITE: ImagePalette = [
 ];
 
 // [dx, dy, weight] for each neighbour that receives part of the error.
-type Kernel = readonly (readonly [number, number, number])[];
+type Kernel = ReadonlyArray<readonly [number, number, number]>;
 
 const KERNELS = {
   atkinson: [
@@ -95,7 +95,7 @@ const nearest = (palette: ImagePalette, r: number, g: number, b: number) => {
   let best = 0;
   let bestDistance = Infinity;
   for (let index = 0; index < palette.length; index += 1) {
-    const color = palette[index];
+    const color = palette.at(index);
     if (!color) {
       continue;
     }

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import type { RefObject } from "react";
 
-import { cssColor } from "@/lib/dither/tokens";
 import type { DitherColor, Rgba } from "@/lib/dither/tokens";
+import { cssColor } from "@/lib/dither/tokens";
 
 const DEFAULT_CELL = 3;
 
@@ -87,8 +87,8 @@ export const subscribeToTheme = (listener: () => void): (() => void) => {
 
 const DEFAULT_NAMES = ["--dither-ink", "--dither-paper"] as const;
 
-type ResolvedColors<Names extends readonly DitherColor[]> = {
-  readonly [Index in keyof Names]: Rgba;
+type ResolvedColors<TNames extends ReadonlyArray<DitherColor>> = {
+  readonly [Index in keyof TNames]: Rgba;
 };
 
 /**
@@ -103,15 +103,17 @@ type ResolvedColors<Names extends readonly DitherColor[]> = {
 export function useDitherColors(
   el?: RefObject<Element | null>
 ): ResolvedColors<typeof DEFAULT_NAMES> | null;
-export function useDitherColors<const Names extends readonly DitherColor[]>(
+export function useDitherColors<
+  const TNames extends ReadonlyArray<DitherColor>,
+>(
   el: RefObject<Element | null> | undefined,
-  names: Names
-): ResolvedColors<Names> | null;
+  names: TNames
+): ResolvedColors<TNames> | null;
 export function useDitherColors(
   el?: RefObject<Element | null>,
-  names: readonly DitherColor[] = DEFAULT_NAMES
-): readonly Rgba[] | null {
-  const [colors, setColors] = useState<readonly Rgba[] | null>(null);
+  names: ReadonlyArray<DitherColor> = DEFAULT_NAMES
+): ReadonlyArray<Rgba> | null {
+  const [colors, setColors] = useState<ReadonlyArray<Rgba> | null>(null);
   const key = names.join("|");
 
   useEffect(() => {

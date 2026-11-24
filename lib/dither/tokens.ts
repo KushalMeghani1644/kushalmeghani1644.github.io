@@ -59,7 +59,7 @@ export type DitherColor = DitherColorName | (string & {});
 export type DitherPalette = readonly [
   DitherColor,
   DitherColor,
-  ...DitherColor[],
+  ...Array<DitherColor>,
 ];
 
 /** Paper to ink, from the `dither-tokens` CSS variables. */

@@ -48,7 +48,7 @@ export const useInView = (
       return;
     }
     const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry?.isIntersecting ?? false),
+      (entries) => setInView(entries.at(0)?.isIntersecting ?? false),
       { rootMargin }
     );
     observer.observe(el);

@@ -14,7 +14,7 @@ export const DITHER_MATRICES = [
   "bayer4",
   "bayer8",
   "blue-noise",
-] as const satisfies readonly DitherMatrix[];
+] as const satisfies ReadonlyArray<DitherMatrix>;
 
 export interface ThresholdMap {
   /** Width and height in cells. The map tiles in both directions. */

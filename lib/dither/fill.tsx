@@ -1,6 +1,8 @@
 import type { ComponentProps } from "react";
 
 import type { DitherMatrix } from "@/lib/dither/matrices";
+import type { Bloom, FillEdge, FillVariant } from "@/lib/dither/style";
+import type { DitherColor } from "@/lib/dither/tokens";
 import { DitherPattern } from "@/lib/dither/pattern";
 import {
   bloomFilter,
@@ -8,9 +10,7 @@ import {
   ditherRamp,
   fillTile,
 } from "@/lib/dither/style";
-import type { Bloom, FillEdge, FillVariant } from "@/lib/dither/style";
 import { cssColor } from "@/lib/dither/tokens";
-import type { DitherColor } from "@/lib/dither/tokens";
 
 /**
  * SVG and DOM pieces of the style kit: a pattern for every fill variant

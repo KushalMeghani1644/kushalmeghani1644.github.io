@@ -1,9 +1,9 @@
 import type { CSSProperties } from "react";
 
-import { getThresholdMap } from "@/lib/dither/matrices";
 import type { DitherMatrix } from "@/lib/dither/matrices";
-import { cssColor } from "@/lib/dither/tokens";
 import type { DitherColor } from "@/lib/dither/tokens";
+import { getThresholdMap } from "@/lib/dither/matrices";
+import { cssColor } from "@/lib/dither/tokens";
 
 /**
  * Static dithers without a canvas: an SVG `<pattern>` for chart fills and a

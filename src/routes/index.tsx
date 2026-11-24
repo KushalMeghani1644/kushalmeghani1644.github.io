@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DATA } from "../data";
-import { DitherLandscape } from "@/components/dithercn/dither-landscape";
+import { DitherCity } from "@/components/dithercn/dither-city";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -48,11 +48,11 @@ function Home() {
       <div className="relative min-h-screen bg-black text-white flex justify-center p-6 pt-24 md:pt-32 font-mono">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-[340px] overflow-hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[min(52vh,480px)] overflow-hidden"
         >
-          <DitherLandscape className="absolute inset-0" />
-          <div className="absolute inset-0 bg-black/45" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black via-black/70 to-transparent" />
+          <DitherCity className="absolute inset-0" />
+          <div className="absolute inset-0 bg-black/22" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black via-black/80 to-transparent" />
         </div>
 
         <div className="relative z-10 w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20">

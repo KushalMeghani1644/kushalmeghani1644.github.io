@@ -1,10 +1,10 @@
 import type { CSSProperties } from "react";
 
-import { getThresholdMap } from "@/lib/dither/matrices";
 import type { DitherMatrix } from "@/lib/dither/matrices";
+import type { DitherColor, DitherColorName } from "@/lib/dither/tokens";
+import { getThresholdMap } from "@/lib/dither/matrices";
 import { ditherMask } from "@/lib/dither/pattern";
 import { cssColor } from "@/lib/dither/tokens";
-import type { DitherColor, DitherColorName } from "@/lib/dither/tokens";
 
 /**
  * The style kit: fill variants, bloom and the default series palette.
@@ -47,11 +47,11 @@ export const SERIES_COLORS = [
   "blue",
   "red",
   "grey",
-] as const satisfies readonly [DitherColorName, ...DitherColorName[]];
+] as const satisfies readonly [DitherColorName, ...Array<DitherColorName>];
 
 /** The colour of series `index`: its own, or the next palette colour. */
 export const seriesColor = (color: DitherColor | undefined, index: number) =>
-  color ?? SERIES_COLORS[index % SERIES_COLORS.length] ?? "ink";
+  color ?? SERIES_COLORS.at(index % SERIES_COLORS.length) ?? "ink";
 
 /** Write one SVG path covering the inked cells of a grid, in cell units. */
 const cellsPath = (

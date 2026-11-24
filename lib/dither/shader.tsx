@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { ComponentProps, ReactNode, RefObject } from "react";
 
+import type { DitherMatrix, ThresholdMap } from "@/lib/dither/matrices";
+import type { DitherPalette, Rgba } from "@/lib/dither/tokens";
 import {
   readDitherCell,
   resolveColor,
@@ -10,10 +12,8 @@ import {
 } from "@/lib/dither/color";
 import { withoutSharedHelpers } from "@/lib/dither/glsl";
 import { getThresholdMap } from "@/lib/dither/matrices";
-import type { DitherMatrix, ThresholdMap } from "@/lib/dither/matrices";
 import { useFrameLoop, usePrefersReducedMotion } from "@/lib/dither/motion";
-import { cssColor, DEFAULT_PALETTE } from "@/lib/dither/tokens";
-import type { DitherPalette, Rgba } from "@/lib/dither/tokens";
+import { DEFAULT_PALETTE, cssColor } from "@/lib/dither/tokens";
 import { cn } from "@/lib/utils";
 
 export type ShaderUniformValue =
@@ -129,11 +129,11 @@ const GLSL_TYPES = { 1: "float", 2: "vec2", 3: "vec3", 4: "vec4" } as const;
 const uniformSize = (value: ShaderUniformValue): UniformSpec["size"] =>
   typeof value === "number" ? 1 : value.length;
 
-const uniformSpecs = (uniforms: DitherUniforms): UniformSpec[] =>
+const uniformSpecs = (uniforms: DitherUniforms): Array<UniformSpec> =>
   Object.keys(uniforms)
     .toSorted()
     .flatMap((name) => {
-      const value = uniforms[name];
+      const value: ShaderUniformValue | undefined = uniforms[name];
       if (value === undefined) {
         return [];
       }
@@ -165,7 +165,7 @@ const FIELD_COLOR = `
 const fragmentShader = (
   field: string,
   colorField: string | undefined,
-  specs: readonly UniformSpec[]
+  specs: ReadonlyArray<UniformSpec>
 ) => `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
@@ -214,7 +214,7 @@ interface DrawInput {
 
 interface Renderer {
   readonly setMatrix: (map: ThresholdMap) => void;
-  readonly setPalette: (colors: readonly Rgba[]) => void;
+  readonly setPalette: (colors: ReadonlyArray<Rgba>) => void;
   readonly draw: (input: DrawInput) => void;
   readonly dispose: () => void;
 }
@@ -262,7 +262,7 @@ const createRenderer = (
   }: {
     field: string;
     colorField: string | undefined;
-    specs: readonly UniformSpec[];
+    specs: ReadonlyArray<UniformSpec>;
   }
 ): Renderer | null => {
   const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
@@ -271,7 +271,7 @@ const createRenderer = (
     gl.FRAGMENT_SHADER,
     fragmentShader(field, colorField, specs)
   );
-  const program = gl.createProgram();
+  const program: WebGLProgram | null = gl.createProgram();
   if (!vertex || !fragment || !program) {
     return null;
   }
@@ -329,7 +329,7 @@ const createRenderer = (
       gl.uniform1f(uTime, time);
       gl.uniform1f(uLevels, levels);
       for (const spec of custom) {
-        const value = uniforms[spec.name];
+        const value: ShaderUniformValue | undefined = uniforms[spec.name];
         if (value === undefined) {
           continue;
         }
@@ -477,8 +477,8 @@ const useContextSlot = (ref: RefObject<Element | null>): boolean => {
     };
     slots.add(slot);
     const nearObserver = new IntersectionObserver(
-      ([entry]) => {
-        slot.near = entry?.isIntersecting ?? false;
+      (entries) => {
+        slot.near = entries.at(0)?.isIntersecting ?? false;
         if (slot.near) {
           slot.lastSeen = performance.now();
           requestContext(slot);
@@ -490,8 +490,8 @@ const useContextSlot = (ref: RefObject<Element | null>): boolean => {
     );
     // Coming on screen can take a context from one that is only nearby, and
     // leaving the screen hands it to an on-screen shader that is waiting.
-    const screenObserver = new IntersectionObserver(([entry]) => {
-      slot.onScreen = entry?.isIntersecting ?? false;
+    const screenObserver = new IntersectionObserver((entries) => {
+      slot.onScreen = entries.at(0)?.isIntersecting ?? false;
       if (slot.onScreen && slot.near) {
         slot.lastSeen = performance.now();
         requestContext(slot);
@@ -775,7 +775,6 @@ export const DitherShader = ({
       markFrame(false);
     };
     // `specs` is described by `specKey`; a new `cell` re-measures.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [field, colorField, specKey, cell, hasContext]);
 
   useEffect(() => {
