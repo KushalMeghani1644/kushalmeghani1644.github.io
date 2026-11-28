@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DATA } from "../data";
 import { DitherDeathStar } from "@/components/dithercn/dither-death-star";
@@ -7,6 +7,13 @@ import { DitherStars } from "@/components/dithercn/dither-stars";
 export const Route = createFileRoute("/")({
   component: Home,
 });
+
+// The 0..1 fade curve used to soften the dimming floor between narrow
+// (phone) and wide (desktop) reading columns.
+const smooth01 = (x: number) => {
+  const t = Math.min(1, Math.max(0, x));
+  return t * t * (3 - 2 * t);
+};
 
 function Home() {
   const [displayedName, setDisplayedName] = useState("");
@@ -34,13 +41,81 @@ function Home() {
     };
   }, [fullName]);
 
+  // Flight-deck measurements: the sky canvas spans the whole document, so
+  // the dogfight needs the reading column (to fade out behind text) and
+  // the document size (to keep ship size steady in CSS pixels).
+  const skyRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [flight, setFlight] = useState({
+    pxScale: 1 / 900,
+    shipSize: 40,
+    band: [0.16, 0.84] as [number, number],
+    dimFloor: 0.3,
+  });
+
+  useEffect(() => {
+    const update = () => {
+      const sky = skyRef.current;
+      if (!sky) {
+        return;
+      }
+      const width = sky.clientWidth || document.documentElement.clientWidth;
+      const height = Math.max(1, sky.clientHeight || 900);
+      const shipSize = Math.min(64, Math.max(28, width * 0.042));
+      let band: [number, number] = [0.16, 0.84];
+      const content = contentRef.current;
+      if (content) {
+        const rect = content.getBoundingClientRect();
+        const pad = 28;
+        band = [
+          Math.max(0, (rect.left - pad) / width),
+          Math.min(1, (rect.right + pad) / width),
+        ];
+      }
+      // Wide screens leave real margins, so ships can dim hard behind the
+      // column; phones are mostly column, so dim gently to stay visible.
+      const dimFloor = 0.3 + 0.25 * smooth01((band[1] - band[0] - 0.55) / 0.3);
+      setFlight((prev) =>
+        prev.pxScale === 1 / height &&
+        prev.shipSize === shipSize &&
+        prev.band[0] === band[0] &&
+        prev.band[1] === band[1] &&
+        prev.dimFloor === dimFloor
+          ? prev
+          : { pxScale: 1 / height, shipSize, band, dimFloor }
+      );
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    if (skyRef.current) {
+      observer.observe(skyRef.current);
+    }
+    if (contentRef.current) {
+      observer.observe(contentRef.current);
+    }
+    window.addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-black text-white flex justify-center p-6 pt-14 md:pt-20 font-mono">
       <div
+        ref={skyRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <DitherStars className="absolute inset-0" />
+        <DitherStars
+          className="absolute inset-0"
+          uniforms={{
+            pxScale: flight.pxScale,
+            shipSize: flight.shipSize,
+            contentBand: flight.band,
+            dimFloor: flight.dimFloor,
+          }}
+        />
       </div>
 
       <div
@@ -58,7 +133,10 @@ function Home() {
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black via-black/60 to-transparent" />
       </div>
 
-        <div className="relative z-10 w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20">
+        <div
+          ref={contentRef}
+          className="relative z-10 w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20"
+        >
           
           <header className="flex flex-col gap-4">
           <h1 
