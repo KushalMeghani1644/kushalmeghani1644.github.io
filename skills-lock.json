@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "skills": {
+    "dithercn": {
+      "source": "dithercn.dev",
+      "sourceUrl": "https://dithercn.dev",
+      "sourceType": "well-known",
+      "computedHash": "36930ab57fca05547931d260f53207d1dd8442a4ce3f856bf1fd9b4b63125e90",
+      "wellKnownDigest": "sha256:bfbde2cdf805dc688e19e7fd332b6c3449a4d1b18203f6b92ab493a5e5f2ec27"
+    }
+  }
+}

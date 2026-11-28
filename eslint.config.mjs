@@ -8,6 +8,7 @@ export default [
       ".vinxi/**",
       ".output/**",
       ".vercel/**",
+      ".delta/**",
       "out/**",
       "build/**",
       "node_modules/**",

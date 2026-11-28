@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DATA } from "../data";
+import { DitherDeathStar } from "@/components/dithercn/dither-death-star";
+import { DitherStars } from "@/components/dithercn/dither-stars";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -33,29 +35,40 @@ function Home() {
   }, [fullName]);
 
   return (
-    <>
-      <nav className="fixed top-0 w-full flex justify-center items-center py-4 px-6 bg-black/80 backdrop-blur-md border-b border-white/10 z-50 text-xs uppercase tracking-widest text-white/60 font-mono">
-        <ul className="flex gap-6 sm:gap-10">
-          <li><a href="#" className="hover:text-white transition-colors">Home</a></li>
-          <li><a href="#projects" className="hover:text-white transition-colors">Projects</a></li>
-          <li><a href="#focus" className="hover:text-white transition-colors">Focus</a></li>
-          <li><a href="#stack" className="hover:text-white transition-colors">Stack</a></li>
-          <li><a href="#socials" className="hover:text-white transition-colors">Socials</a></li>
-        </ul>
-      </nav>
+    <div className="relative min-h-screen bg-black text-white flex justify-center p-6 pt-14 md:pt-20 font-mono">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <DitherStars className="absolute inset-0" />
+      </div>
 
-      <div className="min-h-screen bg-black text-white flex justify-center p-6 pt-24 md:pt-32 font-mono">
-        <div className="w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[min(52vh,480px)] overflow-hidden"
+      >
+        <DitherDeathStar className="absolute inset-0" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(480px 190px at 49% 33%, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.38) 62%, transparent 100%)",
+          }}
+        />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black via-black/60 to-transparent" />
+      </div>
+
+        <div className="relative z-10 w-full max-w-xl flex flex-col gap-12 animate-fade-up pb-20">
           
           <header className="flex flex-col gap-4">
           <h1 
             className="text-3xl font-normal tracking-wide flex items-end gap-3 leading-none"
-            style={{ fontFamily: "'VT323', monospace" }}
+            style={{ fontFamily: "'VT323', monospace", textShadow: "0 2px 18px rgba(0,0,0,0.9)" }}
           >
             <span>{displayedName}</span> <span className="text-[0.8em] mb-1">█</span>
           </h1>
           <div className="h-px bg-white/20 w-full" />
-          <p className="text-sm text-white/60 leading-relaxed text-left">
+          <p className="text-sm text-white/75 leading-relaxed text-left" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.95), 0 2px 16px rgba(0,0,0,0.9)" }}>
             {DATA.bio}
           </p>
         </header>
@@ -76,7 +89,7 @@ function Home() {
               >
                 <div className="flex justify-between items-center uppercase tracking-widest">
                   <span className="font-bold">{p.name}</span>
-                  <span className="opacity-50 transition-transform duration-300 group-hover:translate-x-1">-&gt;</span>
+                  <span className="tracking-normal opacity-50 transition-transform duration-300 group-hover:translate-x-1">-&gt;</span>
                 </div>
                 <span className="text-white/60 group-hover:!text-black/70 leading-relaxed text-left normal-case tracking-normal">
                   {p.description}
@@ -145,7 +158,7 @@ function Home() {
                   {s.icon}
                   <span>{s.name}</span>
                 </div>
-                <span className="opacity-50 transition-transform duration-300 group-hover:translate-x-1">-&gt;</span>
+                <span className="tracking-normal opacity-50 transition-transform duration-300 group-hover:translate-x-1">-&gt;</span>
               </a>
             ))}
           </div>
@@ -153,6 +166,5 @@ function Home() {
 
       </div>
     </div>
-    </>
   );
 }
