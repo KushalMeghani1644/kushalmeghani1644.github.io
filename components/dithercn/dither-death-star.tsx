@@ -59,6 +59,11 @@ vec4 dsPlanetState(float t, float seed, float period) {
   float dx = (raw.x >= 0.0 ? 1.0 : -1.0) * sqrt(max(1.0 - dy * dy, 1e-4));
   vec2 dir = vec2(dx, dy);
   vec2 approach = C + dir * (dsR + pr + 0.10);
+  // Keep the impact point inside the frame at every aspect ratio: narrow
+  // boxes would otherwise push the target past a horizontal edge, and the
+  // beam would end offscreen.
+  approach.x = clamp(approach.x, 0.08, aspect - 0.08);
+  approach.y = clamp(approach.y, 0.30, 0.92);
   // Spawn along the same line, as far out as the frame allows.
   float ty = dir.y > 0.001 ? (0.92 - dsCy) / dir.y
     : (dir.y < -0.001 ? (0.30 - dsCy) / dir.y : 10.0);
@@ -292,6 +297,10 @@ export const DitherDeathStar = ({
   const [cx, cy] = position;
   const dishX = cx + 0.03;
   const dishY = cy + 0.1;
+  // Stop choices that survive palettes shorter than five entries: fall
+  // back to the last entry for any missing index.
+  const bright = palette[Math.min(4, palette.length - 1)];
+  const mid = palette[Math.min(2, palette.length - 1)];
   return (
     <DitherShader
       {...props}
@@ -315,7 +324,7 @@ export const DitherDeathStar = ({
           className="absolute inset-0"
           style={{
             backgroundImage: [
-              `radial-gradient(circle ${Math.round(size * 170)}px at ${cx * 100}% ${(1 - cy) * 100}%, ${cssColor(palette[4])} 0%, ${cssColor(palette[2])} 58%, transparent 74%)`,
+              `radial-gradient(circle ${Math.round(size * 170)}px at ${cx * 100}% ${(1 - cy) * 100}%, ${cssColor(bright)} 0%, ${cssColor(mid)} 58%, transparent 74%)`,
               `radial-gradient(4px 4px at ${dishX * 100}% ${(1 - dishY) * 100}%, rgba(96, 255, 150, 0.85), transparent 70%)`,
               `radial-gradient(3px 3px at 18% 74%, rgba(255, 200, 90, 0.8), transparent 70%)`,
             ].join(", "),

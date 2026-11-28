@@ -282,7 +282,13 @@ export const toSVG = (
 ): string => {
   const { width, height } = source;
   const { cells, swatches } = toCells(source, palette);
-  const fill = background ? mostUsed(cells, swatches) : -1;
+  // The one-rectangle backdrop is only faithful when the whole dither is
+  // opaque: transparent cells would show the rectangle instead of staying
+  // transparent, and semi-transparent dots would blend with it.
+  const opaque = cells.every(
+    (swatchIndex) => swatchIndex >= 0 && swatches[swatchIndex]?.opacity === 1
+  );
+  const fill = background && opaque ? mostUsed(cells, swatches) : -1;
   const paths = mergeRuns({
     cells,
     height,
@@ -294,7 +300,9 @@ export const toSVG = (
   const parts = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width * cell}" height="${height * cell}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">`,
   ];
-  const backdrop = swatches.at(fill);
+  // `fill` is -1 when there is no backdrop; `.at(-1)` would resolve to the
+  // last swatch, so only look the backdrop up for a nonnegative index.
+  const backdrop = fill >= 0 ? swatches.at(fill) : undefined;
   if (backdrop) {
     parts.push(
       `<rect width="${width}" height="${height}" fill="${backdrop.fill}"/>`

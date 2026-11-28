@@ -412,6 +412,8 @@ interface ContextSlot {
   onScreen: boolean;
   lastSeen: number;
   active: boolean;
+  /** Setup failed; the slot is freed and withheld until a retry. */
+  ineligible: boolean;
   readonly setActive: (active: boolean) => void;
 }
 
@@ -433,7 +435,7 @@ const leastRecent = (candidates: Iterable<ContextSlot>) => {
 };
 
 const requestContext = (slot: ContextSlot) => {
-  if (slot.active) {
+  if (slot.active || slot.ineligible) {
     return;
   }
   const live = [...slots].filter((other) => other.active);
@@ -454,7 +456,9 @@ const releaseContext = (slot: ContextSlot) => {
   }
   activate(slot, false);
   // A freed context goes to the shader that waited longest, on screen first.
-  const waiting = [...slots].filter((other) => other.near && !other.active);
+  const waiting = [...slots].filter(
+    (other) => other.near && !other.active && !other.ineligible
+  );
   const onScreen = waiting.filter((other) => other.onScreen);
   const next = leastRecent(onScreen.length > 0 ? onScreen : waiting);
   if (next) {
@@ -463,11 +467,14 @@ const releaseContext = (slot: ContextSlot) => {
 };
 
 const hasOnScreenWaiter = () =>
-  [...slots].some((other) => other.onScreen && other.near && !other.active);
+  [...slots].some(
+    (other) => other.onScreen && other.near && !other.active && !other.ineligible
+  );
 
 /** Holds a slot in the shared context budget while `ref` is near the viewport. */
-const useContextSlot = (ref: RefObject<Element | null>): boolean => {
+const useContextSlot = (ref: RefObject<Element | null>) => {
   const [active, setActive] = useState(false);
+  const slotRef = useRef<ContextSlot | null>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -476,11 +483,13 @@ const useContextSlot = (ref: RefObject<Element | null>): boolean => {
     }
     const slot: ContextSlot = {
       active: false,
+      ineligible: false,
       lastSeen: 0,
       near: false,
       onScreen: false,
       setActive,
     };
+    slotRef.current = slot;
     slots.add(slot);
     const nearObserver = new IntersectionObserver(
       (entries) => {
@@ -513,10 +522,11 @@ const useContextSlot = (ref: RefObject<Element | null>): boolean => {
       // Leave the set first, so the freed context goes to someone else.
       slots.delete(slot);
       releaseContext(slot);
+      slotRef.current = null;
     };
   }, [ref]);
 
-  return active;
+  return { active, slotRef };
 };
 
 export interface DitherShaderProps extends Omit<
@@ -623,7 +633,7 @@ export const DitherShader = ({
   const timeRef = useRef(stillTime);
   const [hasFrame, setHasFrame] = useState(false);
   const hasFrameRef = useRef(false);
-  const hasContext = useContextSlot(rootRef);
+  const { active: hasContext, slotRef } = useContextSlot(rootRef);
 
   const map = getThresholdMap(matrix);
   const resolvedLevels = clampLevels(levels ?? map.steps + 1);
@@ -688,6 +698,19 @@ export const DitherShader = ({
     },
     { enabled: animate, fps, stillTime, target: rootRef }
   );
+
+  // New inputs may compile where the last ones failed: become eligible
+  // again and ask for a slot when one is nearby.
+  useEffect(() => {
+    const slot = slotRef.current;
+    if (!slot) {
+      return;
+    }
+    slot.ineligible = false;
+    if (slot.near && !slot.active) {
+      requestContext(slot);
+    }
+  }, [field, colorField, specKey, cell]);
 
   // Context, program, size and theme. A fresh canvas per context, so a
   // released context never has to be restored.
@@ -762,6 +785,20 @@ export const DitherShader = ({
     };
 
     build();
+    if (!rendererRef.current) {
+      // The shader cannot run (it failed to compile, or the GL is gone).
+      // Free the slot for the other shaders and withhold it from this one
+      // until its inputs change and it can try again.
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      canvas.remove();
+      markFrame(false);
+      const slot = slotRef.current;
+      if (slot) {
+        slot.ineligible = true;
+        releaseContext(slot);
+      }
+      return () => {};
+    }
     resize();
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(root);
