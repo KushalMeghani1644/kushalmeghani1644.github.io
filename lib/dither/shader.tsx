@@ -134,6 +134,8 @@ const uniformSpecs = (uniforms: DitherUniforms): Array<UniformSpec> =>
     .toSorted()
     .flatMap((name) => {
       const value: ShaderUniformValue | undefined = uniforms[name];
+      // A JS caller can still pass an explicit undefined; keep the guard.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (value === undefined) {
         return [];
       }
@@ -272,6 +274,8 @@ const createRenderer = (
     fragmentShader(field, colorField, specs)
   );
   const program: WebGLProgram | null = gl.createProgram();
+  // createProgram() returns null on a lost or exhausted context at runtime.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!vertex || !fragment || !program) {
     return null;
   }
@@ -330,6 +334,8 @@ const createRenderer = (
       gl.uniform1f(uLevels, levels);
       for (const spec of custom) {
         const value: ShaderUniformValue | undefined = uniforms[spec.name];
+        // Same guard as uniformSpecs: tolerate explicit undefined values.
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (value === undefined) {
           continue;
         }
